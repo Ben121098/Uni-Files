@@ -1,0 +1,9 @@
+nächste Schritte Ben
+1) Koherete z0 und u0 erfülle DAE?: x0 und u0 geben und daraus z0 errechnen. Vergleichen mit den vorgegebenen initial conds
+2) beliebiger Punkt aus Trajektorie als intial conds  nhmen und simulieren versuchen
+3) Hoffentlich Übereinstimmung !
+4) nur dann zurück zur Frage: Reboiler-Problem (checke Einheit und Gröenordnung)
+5) Voluminaverteilung zwsch Vapor nd Liquid auf den verschiednene Stufen überprüfen.
+
+Todo Dean:
+Übersetzung von u auf feste Parameter bei Git pushen
