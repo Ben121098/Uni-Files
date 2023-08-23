@@ -50,7 +50,7 @@ from Kolonne_8_Boeden import template_simulator
 # DAE_vars = pickle.load(open("./Data/DAE_variables.dat","rb"))
 # mes = ""
 # for v in DAE_vars:
-#     mes = mes + "simulator.z0['{}'] = tarjectory['Flowsheet.'+'{}'][init_ind]\n".format(v,v)
+#     mes = mes + "simulator.z0['{}'] = trajectory['Flowsheet.'+'{}'][init_ind]\n".format(v,v)
     
 # with open('output.txt', 'w') as file:
 #     file.write(mes)
@@ -62,48 +62,61 @@ from Kolonne_8_Boeden import template_simulator
 
 
 
-## u0
-# with open('./Data/Kolonne_8_Boesden_Textabschnitt.txt', 'r') as file:
-#     inputvar_str =  file.read()
+# u0
+with open('./Data/Kolonne_8_Boesden_Textabschnitt.txt', 'r') as file:
+    inputvar_str =  file.read()
 
-# inputvar_list = []
+inputvar_list = []
 
-# # print(daevar_str)
-# inputvar_list=[sub.split(" = ") [0] for sub in inputvar_str.split("\n")]
-# INPUT_vars = [var[14:-2] for var in inputvar_list]
-# print(DAE_vars)
+# print(daevar_str)
+inputvar_list=[sub.split(" = ") [0] for sub in inputvar_str.split("\n")]
+INPUT_vars = [var[14:-2] for var in inputvar_list]
+print(INPUT_vars)
 
-# model = template_model()
-# sim = template_simulator(model)
+model = template_model()
+sim = template_simulator(model)
 
-# n = np.random.randint(len(inputvar_list))
-# boole = all([INPUT_vars[n] in list(sim.z0.keys()) for n in range(len(INPUT_vars))])
-# print(boole)
+n = np.random.randint(len(inputvar_list))
+boole = all([INPUT_vars[n] in list(sim.u0.keys()) for n in range(len(INPUT_vars))])
+print(boole)
 
-# pickle.dump(INPUT_vars,open("./Data/Input_variables.dat","wb"))
+pickle.dump(INPUT_vars,open("./Data/Input_variables.dat","wb"))
 
-# INPUT_vars = pickle.load(open("./Data/Input_variables.dat","rb"))
+INPUT_vars = pickle.load(open("./Data/Input_variables.dat","rb"))
 
-# mes = ""
-# for u in INPUT_vars:
-#     mes = mes + "simulator.u0['{}'] = tarjectory['{}'][init_ind]\n".format(u,u)
-    
-# with open('output.txt', 'w') as file:
-#     file.write(mes)
-
-
-
-
-## x0
-order_state_var = ["e0_HU_st0_i1", "e0_HU_st0_i2", "e0_HU_st0_i3", "e0_HU_st1_i1", "e0_HU_st2_i1", "e0_HU_st3_i1", "e0_HU_st4_i1", "e0_HU_st5_i1", "e0_HU_st6_i1", "e0_HU_st7_i1", "e0_HU_st8_i1", "e0_HU_st1_i2", "e0_HU_st2_i2", "e0_HU_st3_i2", "e0_HU_st4_i2", "e0_HU_st5_i2", "e0_HU_st6_i2", "e0_HU_st7_i2", "e0_HU_st8_i2", "e0_HU_st1_i3", "e0_HU_st2_i3", "e0_HU_st3_i3", "e0_HU_st4_i3", "e0_HU_st5_i3", "e0_HU_st6_i3", "e0_HU_st7_i3", "e0_HU_st8_i3", "e0_U_st1", "e0_U_st2", "e0_U_st3", "e0_U_st4", "e0_U_st5", "e0_U_st6", "e0_U_st7", "e0_U_st0", "e0_U_st8", "e0_HU_st9_i1", "e0_HU_st9_i2", "e0_HU_st9_i3", "e0_U_st9", ]
-pickle.dump(order_state_var,open("./Data/State_variables.dat","wb"))
-STATE_vars = pickle.load(open("./Data/State_variables.dat","rb"))
 mes = ""
-for x in STATE_vars:
-    mes = mes + "simulator.x0['{}'] = trajectory['Flowsheet.{}'][init_ind]\n".format(x,x)
+for u in INPUT_vars:
+    mes = mes + "simulator.u0['{}'] = trajectory[Flowsheet.'{}'][idx]\n".format(u,u)
     
 with open('output.txt', 'w') as file:
     file.write(mes)
+
+
+
+
+
+# mes = ""
+# for u in INPUT_vars:
+#     mes = mes + "simulator.u0['{}'] = trajectory['{}'][idx]\n".format(u,u)
+    
+# with open('us.txt', 'w') as file:
+#     file.write(mes)
+
+
+
+
+
+
+# ## x0
+# order_state_var = ["e0_HU_st0_i1", "e0_HU_st0_i2", "e0_HU_st0_i3", "e0_HU_st1_i1", "e0_HU_st2_i1", "e0_HU_st3_i1", "e0_HU_st4_i1", "e0_HU_st5_i1", "e0_HU_st6_i1", "e0_HU_st7_i1", "e0_HU_st8_i1", "e0_HU_st1_i2", "e0_HU_st2_i2", "e0_HU_st3_i2", "e0_HU_st4_i2", "e0_HU_st5_i2", "e0_HU_st6_i2", "e0_HU_st7_i2", "e0_HU_st8_i2", "e0_HU_st1_i3", "e0_HU_st2_i3", "e0_HU_st3_i3", "e0_HU_st4_i3", "e0_HU_st5_i3", "e0_HU_st6_i3", "e0_HU_st7_i3", "e0_HU_st8_i3", "e0_U_st1", "e0_U_st2", "e0_U_st3", "e0_U_st4", "e0_U_st5", "e0_U_st6", "e0_U_st7", "e0_U_st0", "e0_U_st8", "e0_HU_st9_i1", "e0_HU_st9_i2", "e0_HU_st9_i3", "e0_U_st9", ]
+# pickle.dump(order_state_var,open("./Data/State_variables.dat","wb"))
+# STATE_vars = pickle.load(open("./Data/State_variables.dat","rb"))
+# mes = ""
+# for x in STATE_vars:
+#     mes = mes + "simulator.x0['{}'] = trajectory['Flowsheet.{}'][init_ind]\n".format(x,x)
+    
+# with open('output.txt', 'w') as file:
+#     file.write(mes)
 
 
 

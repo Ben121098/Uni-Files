@@ -2343,111 +2343,113 @@ if __name__ == "__main__":
     simulator.setup()
     simulator.set_initial_guess()
     
-    simulator.u0["e0_F_F_st9"] = 0.001 #
-    simulator.u0["e0_greek_sigma_R"] = 0
+    # simulator.u0["e0_F_F_st9"] = 0.001 #
+    # simulator.u0["e0_greek_sigma_R"] = 0
     # simulator.z0["e0_V_L_st9"] = 0.0100
     
-    idx1 = idx2 = 0
+#     idx1 = idx2 = 0
     
-    for idx1 in range(17000):
-        u0 = simulator.u0.master
+    original_u0 = pickle.load(open(".\\Data\\original_u0.dat","rb"))
+    for idx1 in range(5):
+        # u0 = simulator.u0.master
+        u0 = original_u0.reshape(-1,1)
         simulator.make_step(u0)
-        print(simulator.z0["e0_V_L_st9"],
-              simulator.z0["e0_V_V_st9"],
-              simulator.u0["e0_V_tot_st9"],
-              simulator.u0["e0_greek_sigma_R"],
-              "\n",
-              sep="\n")
+#         print(simulator.z0["e0_V_L_st9"],
+#               simulator.z0["e0_V_V_st9"],
+#               simulator.u0["e0_V_tot_st9"],
+#               simulator.u0["e0_greek_sigma_R"],
+#               "\n",
+#               sep="\n")
     
-    simulator.u0["e0_F_F_st9"] = 0.000
-    simulator.u0["e0_greek_sigma_R"] = 10
-    simulator.u0["e0_Q_st9"] = 1
-    for idx2 in range(340):
-        u0 = simulator.u0.master
-        simulator.make_step(u0)
-        print(simulator.z0["e0_V_L_st9"],
-              simulator.z0["e0_V_V_st9"],
-              simulator.u0["e0_V_tot_st9"],
-              simulator.u0["e0_greek_sigma_R"],
-              "\n",
-              sep="\n")
+#     simulator.u0["e0_F_F_st9"] = 0.000
+#     simulator.u0["e0_greek_sigma_R"] = 10
+#     simulator.u0["e0_Q_st9"] = 1
+#     for idx2 in range(340):
+#         u0 = simulator.u0.master
+#         simulator.make_step(u0)
+#         print(simulator.z0["e0_V_L_st9"],
+#               simulator.z0["e0_V_V_st9"],
+#               simulator.u0["e0_V_tot_st9"],
+#               simulator.u0["e0_greek_sigma_R"],
+#               "\n",
+#               sep="\n")
 
 
-    # fig, ax, graphics = do_mpc.graphics.default_plot(
-    #     simulator.data, dae_states_list=[], inputs_list=[]
-    # )
-    # fig, ax, graphics = do_mpc.graphics.default_plot(
-    #     simulator.data, dae_states_list=[], inputs_list=[]
-    # )
+#     # fig, ax, graphics = do_mpc.graphics.default_plot(
+#     #     simulator.data, dae_states_list=[], inputs_list=[]
+#     # )
+#     # fig, ax, graphics = do_mpc.graphics.default_plot(
+#     #     simulator.data, dae_states_list=[], inputs_list=[]
+#     # )
     
-    timestep = params_simulator["t_step"]
-    fig, ax = plt.subplots(2,sharex=True)
-    ax[0].plot(simulator.data["_time"],
-            simulator.data["_u","e0_V_tot_st9"],label="st 9")
-    ax[0].plot(simulator.data["_time"],
-            simulator.data["_u","e0_V_tot_st7"],label="st 7")
-    ax[0].plot(simulator.data["_time"],
-            simulator.data["_u","e0_V_tot_st4"],label="st 4")
-    ax[0].plot(simulator.data["_time"],
-            simulator.data["_u","e0_V_tot_st2"],label="st 2")
-    ax[0].set_ylabel("V")
-    ax[0].legend()
-    ax[0].set_title("V_tot_i at stages 2,4,7 and 9")
+#     timestep = params_simulator["t_step"]
+#     fig, ax = plt.subplots(2,sharex=True)
+#     ax[0].plot(simulator.data["_time"],
+#             simulator.data["_u","e0_V_tot_st9"],label="st 9")
+#     ax[0].plot(simulator.data["_time"],
+#             simulator.data["_u","e0_V_tot_st7"],label="st 7")
+#     ax[0].plot(simulator.data["_time"],
+#             simulator.data["_u","e0_V_tot_st4"],label="st 4")
+#     ax[0].plot(simulator.data["_time"],
+#             simulator.data["_u","e0_V_tot_st2"],label="st 2")
+#     ax[0].set_ylabel("V")
+#     ax[0].legend()
+#     ax[0].set_title("V_tot_i at stages 2,4,7 and 9")
     
-    ax[1].plot(simulator.data["_time"],simulator.data["_z","e0_V_L_st9"],label="")
-    ax[1].set_ylabel("liquid volume")
-    ax[1].set_xlabel("Time in seconds")
-    ax[1].set_title("V_liquid at reboiler")
-    
-    
-    fig, ax1 = plt.subplots(2,sharex=True)
-    ax1[0].plot(simulator.data["_time"],
-                simulator.data["_z","e0_y_st9_i1"],label="y_1")
-    ax1[0].plot(simulator.data["_time"],
-                simulator.data["_z","e0_y_st9_i2"],label="y_2")
-    ax1[0].plot(simulator.data["_time"],
-                simulator.data["_z","e0_y_st9_i3"],label="y_N2")
-    ax1[0].set_ylabel("vapor fraction")
-    ax1[0].legend()
-    ax1[0].set_title("x_i and y_i at reboiler")
+#     ax[1].plot(simulator.data["_time"],simulator.data["_z","e0_V_L_st9"],label="")
+#     ax[1].set_ylabel("liquid volume")
+#     ax[1].set_xlabel("Time in seconds")
+#     ax[1].set_title("V_liquid at reboiler")
     
     
-    
-    ax1[1].plot(simulator.data["_time"],
-                simulator.data["_z","e0_x_st9_i1"],label="x_1")
-    ax1[1].plot(simulator.data["_time"],
-                simulator.data["_z","e0_x_st9_i2"],label="x_2")
-    ax1[1].plot(simulator.data["_time"],
-                simulator.data["_z","e0_x_st9_i3"],label="x_N2")
-    ax1[1].set_ylabel("liquid fraction")
-    ax1[1].set_xlabel("Time in seconds")
-    ax1[1].legend()
-    plt.show()
-    
-    
-    print([idx1,idx2])
+#     fig, ax1 = plt.subplots(2,sharex=True)
+#     ax1[0].plot(simulator.data["_time"],
+#                 simulator.data["_z","e0_y_st9_i1"],label="y_1")
+#     ax1[0].plot(simulator.data["_time"],
+#                 simulator.data["_z","e0_y_st9_i2"],label="y_2")
+#     ax1[0].plot(simulator.data["_time"],
+#                 simulator.data["_z","e0_y_st9_i3"],label="y_N2")
+#     ax1[0].set_ylabel("vapor fraction")
+#     ax1[0].legend()
+#     ax1[0].set_title("x_i and y_i at reboiler")
     
     
     
-    def plot(simulator,var={"_z":["e0_x_st9_i1","e0_x_st9_i2","e0_x_st9_i3"]},stages=[9],
-             with_leg=True,legend=["x_st9_i1","x_st9_i1","x_st9_i1"],title="x at reboiler"):
-        ts = simulator.data["_time"].copy()
-        ys = []
-        for key, value_list in var.items():
-            for value in value_list:
-                ys.append(simulator.data[key,value].copy())
+#     ax1[1].plot(simulator.data["_time"],
+#                 simulator.data["_z","e0_x_st9_i1"],label="x_1")
+#     ax1[1].plot(simulator.data["_time"],
+#                 simulator.data["_z","e0_x_st9_i2"],label="x_2")
+#     ax1[1].plot(simulator.data["_time"],
+#                 simulator.data["_z","e0_x_st9_i3"],label="x_N2")
+#     ax1[1].set_ylabel("liquid fraction")
+#     ax1[1].set_xlabel("Time in seconds")
+#     ax1[1].legend()
+#     plt.show()
+    
+    
+#     print([idx1,idx2])
+    
+    
+    
+#     def plot(simulator,var={"_z":["e0_x_st9_i1","e0_x_st9_i2","e0_x_st9_i3"]},stages=[9],
+#              with_leg=True,legend=["x_st9_i1","x_st9_i1","x_st9_i1"],title="x at reboiler"):
+#         ts = simulator.data["_time"].copy()
+#         ys = []
+#         for key, value_list in var.items():
+#             for value in value_list:
+#                 ys.append(simulator.data[key,value].copy())
         
-        plt.figure(num=10)
-        for ind, y in enumerate(ys):
-            plt.plot(ts,y,label=legend[ind])
+#         plt.figure(num=10)
+#         for ind, y in enumerate(ys):
+#             plt.plot(ts,y,label=legend[ind])
             
-        if with_leg:
-            plt.legend()
-        # plt.grid()
-        plt.title(title)
+#         if with_leg:
+#             plt.legend()
+#         # plt.grid()
+#         plt.title(title)
         
-    # plot(simulator,var={"_z":["e0_F_N2_st9"]},title="N2 Feed at reboiler",legend=[""])
-    plot(simulator,var={"_z":["e0_V_V_st9","e0_V_L_st9"]},legend=["V_V","V_L"],with_leg=True)
+#     # plot(simulator,var={"_z":["e0_F_N2_st9"]},title="N2 Feed at reboiler",legend=[""])
+#     plot(simulator,var={"_z":["e0_V_V_st9","e0_V_L_st9"]},legend=["V_V","V_L"],with_leg=True)
     
     
     

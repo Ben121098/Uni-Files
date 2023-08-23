@@ -1,30 +1,22 @@
-#   This file is part of do-mpc
-#
-#   do-mpc: An environment for the easy, modular and efficient implementation of
-#        robust nonlinear model predictive control
-#
-#   Copyright (c) 2014-2019 Sergio Lucia, Alexandru Tatulea-Codrean
-#                        TU Dortmund. All rights reserved
-#
-#   do-mpc is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as
-#   published by the Free Software Foundation, either version 3
-#   of the License, or (at your option) any later version.
-#
-#   do-mpc is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
-#
-#   You should have received a copy of the GNU General Public License
-#   along with do-mpc.  If not, see <http://www.gnu.org/licenses/>.
-
+import pandas as pd
 import casadi as ca
+import numpy as np
 import do_mpc
+from Kolonne_8_Boeden import template_model
 from matplotlib import pyplot as plt
+import pickle
+
+trajectory = pd.read_pickle("./Data/alldata.pck")
+
+# plt.plot(trajectory["Time"],trajectory["Flowsheet.e0_T_st9"])
 
 
-def template_model():
+# for col in list(v.columns):
+#     if "T_st9" in col:
+#         print(col)
+
+
+def template_model(init_ind=0):
     """
     Here could be the doc
     """
@@ -41,64 +33,68 @@ def template_model():
         return std_p_s
 
     # Constants
-    e0_greek_rho_Ldummy = 45.95
-    e0_M_i1 = 0.046069
-    e0_M_i2 = 0.018015
-    e0_M_i3 = 0.02801
-    e0_P_c_i1 = 61.48
-    e0_P_c_i2 = 220.64
-    e0_Param_VDI2_A_i1 = -8.33801
-    e0_Param_hLV_A_i1 = 37.364136
-    e0_Param_hL_A_i1 = -286.5152
-    e0_Param_VDI2_A_i2 = -7.86975
-    e0_Param_hLV_A_i2 = 54.697876
-    e0_Param_hL_A_i2 = -306.6468
-    e0_Param_hLV_A_i3 = -8.673213
-    e0_Param_hL_A_i3 = 0.0
-    e0_Param_VDI2_B_i1 = 0.08719
-    e0_Param_hLV_B_i1 = 0.21758129
-    e0_Param_hL_B_i1 = -0.17589763
-    e0_Param_VDI2_B_i2 = 1.90561
-    e0_Param_hLV_B_i2 = -0.02827908
-    e0_Param_hL_B_i2 = 0.06390862
-    e0_Param_hLV_B_i3 = 0.028969195
-    e0_Param_hL_B_i3 = 0.0
-    e0_Param_VDI2_C_i1 = -3.30578
-    e0_Param_hLV_C_i1 = -0.0013882424
-    e0_Param_hL_C_i1 = 0.0013536256
-    e0_Param_VDI2_C_i2 = -2.30891
-    e0_Param_hLV_C_i2 = -6.08415E-5
-    e0_Param_hL_C_i2 = 5.03617E-5
-    e0_Param_hLV_C_i3 = 1.1047E-6
-    e0_Param_hL_C_i3 = 0.0
-    e0_Param_VDI2_D_i1 = -0.25986
-    e0_Param_hLV_D_i1 = 3.3797E-6
-    e0_Param_hL_D_i1 = -3.1434E-6
-    e0_Param_VDI2_D_i2 = -2.06472
-    e0_Param_hLV_D_i2 = 2.024E-7
-    e0_Param_hL_D_i2 = -1.833E-7
-    e0_Param_hLV_D_i3 = -3.7E-9
-    e0_Param_hL_D_i3 = 0.0
-    e0_Param_hLV_E_i1 = -3.3E-9
-    e0_Param_hL_E_i1 = 3.1E-9
-    e0_Param_hLV_E_i2 = -3.0E-10
-    e0_Param_hL_E_i2 = 3.0E-10
-    e0_Param_hLV_E_i3 = 0.0
-    e0_Param_hL_E_i3 = 0.0
-    e0_Param_Labs_sharp = 1.0E-6
-    e0_Param_Ldirac_sharp = 1.0E-6
-    e0_Param_Lsig_sharp = 1.0E-6
-    e0_Param_N2max_sharp = 1.0E-6
-    e0_Param_PCsig_sharp = 1.0E-6
-    e0_Param_SVmax_sharp = 1.0E-6
-    e0_Param_Vmax_sharp = 1.0E-6
-    e0_Param_Vmin_sharp = 1.0E-6
-    e0_Param_mid_sharp = 1.0E-6
-    e0_R = 8.314
-    e0_T_c_i1 = 513.9
-    e0_T_c_i2 = 647.1
-    e0_a_packing = 500.0
-    e0_g = 9.81
+    constant_keys = pickle.load(open("./Data/constants.dat","rb"))
+    
+    e0_greek_rho_Ldummy = trajectory['Flowsheet.e0_greek_rho_Ldummy'][init_ind]
+    e0_M_i1 = trajectory['Flowsheet.e0_M_i1'][init_ind]
+    e0_M_i2 = trajectory['Flowsheet.e0_M_i2'][init_ind]
+    e0_M_i3 = trajectory['Flowsheet.e0_M_i3'][init_ind]
+    e0_P_c_i1 = trajectory['Flowsheet.e0_P_c_i1'][init_ind]
+    e0_P_c_i2 = trajectory['Flowsheet.e0_P_c_i2'][init_ind]
+    e0_Param_VDI2_A_i1 = trajectory['Flowsheet.e0_Param_VDI2_A_i1'][init_ind]
+    e0_Param_hLV_A_i1 = trajectory['Flowsheet.e0_Param_hLV_A_i1'][init_ind]
+    e0_Param_hL_A_i1 = trajectory['Flowsheet.e0_Param_hL_A_i1'][init_ind]
+    e0_Param_VDI2_A_i2 = trajectory['Flowsheet.e0_Param_VDI2_A_i2'][init_ind]
+    e0_Param_hLV_A_i2 = trajectory['Flowsheet.e0_Param_hLV_A_i2'][init_ind]
+    e0_Param_hL_A_i2 = trajectory['Flowsheet.e0_Param_hL_A_i2'][init_ind]
+    e0_Param_hLV_A_i3 = trajectory['Flowsheet.e0_Param_hLV_A_i3'][init_ind]
+    e0_Param_hL_A_i3 = trajectory['Flowsheet.e0_Param_hL_A_i3'][init_ind]
+    e0_Param_VDI2_B_i1 = trajectory['Flowsheet.e0_Param_VDI2_B_i1'][init_ind]
+    e0_Param_hLV_B_i1 = trajectory['Flowsheet.e0_Param_hLV_B_i1'][init_ind]
+    e0_Param_hL_B_i1 = trajectory['Flowsheet.e0_Param_hL_B_i1'][init_ind]
+    e0_Param_VDI2_B_i2 = trajectory['Flowsheet.e0_Param_VDI2_B_i2'][init_ind]
+    e0_Param_hLV_B_i2 = trajectory['Flowsheet.e0_Param_hLV_B_i2'][init_ind]
+    e0_Param_hL_B_i2 = trajectory['Flowsheet.e0_Param_hL_B_i2'][init_ind]
+    e0_Param_hLV_B_i3 = trajectory['Flowsheet.e0_Param_hLV_B_i3'][init_ind]
+    e0_Param_hL_B_i3 = trajectory['Flowsheet.e0_Param_hL_B_i3'][init_ind]
+    e0_Param_VDI2_C_i1 = trajectory['Flowsheet.e0_Param_VDI2_C_i1'][init_ind]
+    e0_Param_hLV_C_i1 = trajectory['Flowsheet.e0_Param_hLV_C_i1'][init_ind]
+    e0_Param_hL_C_i1 = trajectory['Flowsheet.e0_Param_hL_C_i1'][init_ind]
+    e0_Param_VDI2_C_i2 = trajectory['Flowsheet.e0_Param_VDI2_C_i2'][init_ind]
+    e0_Param_hLV_C_i2 = trajectory['Flowsheet.e0_Param_hLV_C_i2'][init_ind]
+    e0_Param_hL_C_i2 = trajectory['Flowsheet.e0_Param_hL_C_i2'][init_ind]
+    e0_Param_hLV_C_i3 = trajectory['Flowsheet.e0_Param_hLV_C_i3'][init_ind]
+    e0_Param_hL_C_i3 = trajectory['Flowsheet.e0_Param_hL_C_i3'][init_ind]
+    e0_Param_VDI2_D_i1 = trajectory['Flowsheet.e0_Param_VDI2_D_i1'][init_ind]
+    e0_Param_hLV_D_i1 = trajectory['Flowsheet.e0_Param_hLV_D_i1'][init_ind]
+    e0_Param_hL_D_i1 = trajectory['Flowsheet.e0_Param_hL_D_i1'][init_ind]
+    e0_Param_VDI2_D_i2 = trajectory['Flowsheet.e0_Param_VDI2_D_i2'][init_ind]
+    e0_Param_hLV_D_i2 = trajectory['Flowsheet.e0_Param_hLV_D_i2'][init_ind]
+    e0_Param_hL_D_i2 = trajectory['Flowsheet.e0_Param_hL_D_i2'][init_ind]
+    e0_Param_hLV_D_i3 = trajectory['Flowsheet.e0_Param_hLV_D_i3'][init_ind]
+    e0_Param_hL_D_i3 = trajectory['Flowsheet.e0_Param_hL_D_i3'][init_ind]
+    e0_Param_hLV_E_i1 = trajectory['Flowsheet.e0_Param_hLV_E_i1'][init_ind]
+    e0_Param_hL_E_i1 = trajectory['Flowsheet.e0_Param_hL_E_i1'][init_ind]
+    e0_Param_hLV_E_i2 = trajectory['Flowsheet.e0_Param_hLV_E_i2'][init_ind]
+    e0_Param_hL_E_i2 = trajectory['Flowsheet.e0_Param_hL_E_i2'][init_ind]
+    e0_Param_hLV_E_i3 = trajectory['Flowsheet.e0_Param_hLV_E_i3'][init_ind]
+    e0_Param_hL_E_i3 = trajectory['Flowsheet.e0_Param_hL_E_i3'][init_ind]
+    e0_Param_Labs_sharp = trajectory['Flowsheet.e0_Param_Labs_sharp'][init_ind]
+    e0_Param_Ldirac_sharp = trajectory['Flowsheet.e0_Param_Ldirac_sharp'][init_ind]
+    e0_Param_Lsig_sharp = trajectory['Flowsheet.e0_Param_Lsig_sharp'][init_ind]
+    e0_Param_N2max_sharp = trajectory['Flowsheet.e0_Param_N2max_sharp'][init_ind]
+    e0_Param_PCsig_sharp = trajectory['Flowsheet.e0_Param_PCsig_sharp'][init_ind]
+    e0_Param_SVmax_sharp = trajectory['Flowsheet.e0_Param_SVmax_sharp'][init_ind]
+    e0_Param_Vmax_sharp = trajectory['Flowsheet.e0_Param_Vmax_sharp'][init_ind]
+    e0_Param_Vmin_sharp = trajectory['Flowsheet.e0_Param_Vmin_sharp'][init_ind]
+    e0_Param_mid_sharp = trajectory['Flowsheet.e0_Param_mid_sharp'][init_ind]
+    e0_R = trajectory['Flowsheet.e0_R'][init_ind]
+    e0_T_c_i1 = trajectory['Flowsheet.e0_T_c_i1'][init_ind]
+    e0_T_c_i2 = trajectory['Flowsheet.e0_T_c_i2'][init_ind]
+    e0_a_packing = trajectory['Flowsheet.e0_a_packing'][init_ind]
+    e0_g = trajectory['Flowsheet.e0_g'][init_ind]
+
+
 
     # Dynamic/Differential states
     e0_HU_st0_i1 = model.set_variable(var_type='_x', var_name="e0_HU_st0_i1", shape=(1,1))  # noqa: E501
@@ -1647,7 +1643,7 @@ def template_model():
     return model
 
 
-def template_simulator(model):
+def template_simulator(model,init_ind=0):
     """
     Here could be the doc
     """
@@ -1664,741 +1660,805 @@ def template_simulator(model):
 
     simulator.set_p_fun(lambda t_now: p_template)
     # Initial conditions (x0)
-    simulator.x0["e0_HU_st0_i1"] = -4.3628597E-6
-    simulator.x0["e0_HU_st0_i2"] = 4.2423385E-6
-    simulator.x0["e0_HU_st0_i3"] = 0.13225356
-    simulator.x0["e0_HU_st1_i1"] = -4.8356003E-7
-    simulator.x0["e0_HU_st2_i1"] = -4.8356003E-7
-    simulator.x0["e0_HU_st3_i1"] = -4.8356003E-7
-    simulator.x0["e0_HU_st4_i1"] = -4.8356003E-7
-    simulator.x0["e0_HU_st5_i1"] = -4.8356003E-7
-    simulator.x0["e0_HU_st6_i1"] = -4.8356003E-7
-    simulator.x0["e0_HU_st7_i1"] = -4.8356003E-7
-    simulator.x0["e0_HU_st8_i1"] = -4.8356003E-7
-    simulator.x0["e0_HU_st1_i2"] = 4.7019222E-7
-    simulator.x0["e0_HU_st2_i2"] = 4.7019222E-7
-    simulator.x0["e0_HU_st3_i2"] = 4.7019222E-7
-    simulator.x0["e0_HU_st4_i2"] = 4.7019222E-7
-    simulator.x0["e0_HU_st5_i2"] = 4.7019222E-7
-    simulator.x0["e0_HU_st6_i2"] = 4.7019222E-7
-    simulator.x0["e0_HU_st7_i2"] = 4.7019222E-7
-    simulator.x0["e0_HU_st8_i2"] = 4.7019222E-7
-    simulator.x0["e0_HU_st1_i3"] = 0.016531775
-    simulator.x0["e0_HU_st2_i3"] = 0.016531775
-    simulator.x0["e0_HU_st3_i3"] = 0.016531775
-    simulator.x0["e0_HU_st4_i3"] = 0.016531775
-    simulator.x0["e0_HU_st5_i3"] = 0.016531775
-    simulator.x0["e0_HU_st6_i3"] = 0.016531775
-    simulator.x0["e0_HU_st7_i3"] = 0.016531775
-    simulator.x0["e0_HU_st8_i3"] = 0.016531775
-    simulator.x0["e0_U_st1"] = -1.3016493E-4
-    simulator.x0["e0_U_st2"] = -1.3016493E-4
-    simulator.x0["e0_U_st3"] = -1.3016493E-4
-    simulator.x0["e0_U_st4"] = -1.3016493E-4
-    simulator.x0["e0_U_st5"] = -1.3016493E-4
-    simulator.x0["e0_U_st6"] = -1.3016493E-4
-    simulator.x0["e0_U_st7"] = -1.3016493E-4
-    simulator.x0["e0_U_st0"] = -0.0010413377
-    simulator.x0["e0_U_st8"] = -1.3016493E-4
-    simulator.x0["e0_HU_st9_i1"] = -3.4731358E-5
-    simulator.x0["e0_HU_st9_i2"] = 3.3771226E-5
-    simulator.x0["e0_HU_st9_i3"] = 1.2039918
-    simulator.x0["e0_U_st9"] = -0.009479773
+    simulator.x0['e0_HU_st0_i1'] = trajectory['Flowsheet.e0_HU_st0_i1'][init_ind]
+    simulator.x0['e0_HU_st0_i2'] = trajectory['Flowsheet.e0_HU_st0_i2'][init_ind]
+    simulator.x0['e0_HU_st0_i3'] = trajectory['Flowsheet.e0_HU_st0_i3'][init_ind]
+    simulator.x0['e0_HU_st1_i1'] = trajectory['Flowsheet.e0_HU_st1_i1'][init_ind]
+    simulator.x0['e0_HU_st2_i1'] = trajectory['Flowsheet.e0_HU_st2_i1'][init_ind]
+    simulator.x0['e0_HU_st3_i1'] = trajectory['Flowsheet.e0_HU_st3_i1'][init_ind]
+    simulator.x0['e0_HU_st4_i1'] = trajectory['Flowsheet.e0_HU_st4_i1'][init_ind]
+    simulator.x0['e0_HU_st5_i1'] = trajectory['Flowsheet.e0_HU_st5_i1'][init_ind]
+    simulator.x0['e0_HU_st6_i1'] = trajectory['Flowsheet.e0_HU_st6_i1'][init_ind]
+    simulator.x0['e0_HU_st7_i1'] = trajectory['Flowsheet.e0_HU_st7_i1'][init_ind]
+    simulator.x0['e0_HU_st8_i1'] = trajectory['Flowsheet.e0_HU_st8_i1'][init_ind]
+    simulator.x0['e0_HU_st1_i2'] = trajectory['Flowsheet.e0_HU_st1_i2'][init_ind]
+    simulator.x0['e0_HU_st2_i2'] = trajectory['Flowsheet.e0_HU_st2_i2'][init_ind]
+    simulator.x0['e0_HU_st3_i2'] = trajectory['Flowsheet.e0_HU_st3_i2'][init_ind]
+    simulator.x0['e0_HU_st4_i2'] = trajectory['Flowsheet.e0_HU_st4_i2'][init_ind]
+    simulator.x0['e0_HU_st5_i2'] = trajectory['Flowsheet.e0_HU_st5_i2'][init_ind]
+    simulator.x0['e0_HU_st6_i2'] = trajectory['Flowsheet.e0_HU_st6_i2'][init_ind]
+    simulator.x0['e0_HU_st7_i2'] = trajectory['Flowsheet.e0_HU_st7_i2'][init_ind]
+    simulator.x0['e0_HU_st8_i2'] = trajectory['Flowsheet.e0_HU_st8_i2'][init_ind]
+    simulator.x0['e0_HU_st1_i3'] = trajectory['Flowsheet.e0_HU_st1_i3'][init_ind]
+    simulator.x0['e0_HU_st2_i3'] = trajectory['Flowsheet.e0_HU_st2_i3'][init_ind]
+    simulator.x0['e0_HU_st3_i3'] = trajectory['Flowsheet.e0_HU_st3_i3'][init_ind]
+    simulator.x0['e0_HU_st4_i3'] = trajectory['Flowsheet.e0_HU_st4_i3'][init_ind]
+    simulator.x0['e0_HU_st5_i3'] = trajectory['Flowsheet.e0_HU_st5_i3'][init_ind]
+    simulator.x0['e0_HU_st6_i3'] = trajectory['Flowsheet.e0_HU_st6_i3'][init_ind]
+    simulator.x0['e0_HU_st7_i3'] = trajectory['Flowsheet.e0_HU_st7_i3'][init_ind]
+    simulator.x0['e0_HU_st8_i3'] = trajectory['Flowsheet.e0_HU_st8_i3'][init_ind]
+    simulator.x0['e0_U_st1'] = trajectory['Flowsheet.e0_U_st1'][init_ind]
+    simulator.x0['e0_U_st2'] = trajectory['Flowsheet.e0_U_st2'][init_ind]
+    simulator.x0['e0_U_st3'] = trajectory['Flowsheet.e0_U_st3'][init_ind]
+    simulator.x0['e0_U_st4'] = trajectory['Flowsheet.e0_U_st4'][init_ind]
+    simulator.x0['e0_U_st5'] = trajectory['Flowsheet.e0_U_st5'][init_ind]
+    simulator.x0['e0_U_st6'] = trajectory['Flowsheet.e0_U_st6'][init_ind]
+    simulator.x0['e0_U_st7'] = trajectory['Flowsheet.e0_U_st7'][init_ind]
+    simulator.x0['e0_U_st0'] = trajectory['Flowsheet.e0_U_st0'][init_ind]
+    simulator.x0['e0_U_st8'] = trajectory['Flowsheet.e0_U_st8'][init_ind]
+    simulator.x0['e0_HU_st9_i1'] = trajectory['Flowsheet.e0_HU_st9_i1'][init_ind]
+    simulator.x0['e0_HU_st9_i2'] = trajectory['Flowsheet.e0_HU_st9_i2'][init_ind]
+    simulator.x0['e0_HU_st9_i3'] = trajectory['Flowsheet.e0_HU_st9_i3'][init_ind]
+    simulator.x0['e0_U_st9'] = trajectory['Flowsheet.e0_U_st9'][init_ind]
+
+
 
     # Initial condition (z0)
-    simulator.z0["e0_P_LV_st0_i1"] = 0.08850626933441658
-    simulator.z0["e0_P_LV_st0_i2"] = 0.03539382722579711
-    simulator.z0["e0_P_LV_st1_i1"] = 0.08850626933441658
-    simulator.z0["e0_P_LV_st1_i2"] = 0.03539382722579711
-    simulator.z0["e0_P_LV_st2_i1"] = 0.08850626933441658
-    simulator.z0["e0_P_LV_st2_i2"] = 0.03539382722579711
-    simulator.z0["e0_P_LV_st3_i1"] = 0.08850626933441658
-    simulator.z0["e0_P_LV_st3_i2"] = 0.03539382722579711
-    simulator.z0["e0_P_LV_st4_i1"] = 0.08850626933441658
-    simulator.z0["e0_P_LV_st4_i2"] = 0.03539382722579711
-    simulator.z0["e0_P_LV_st5_i1"] = 0.08850626933441658
-    simulator.z0["e0_P_LV_st5_i2"] = 0.03539382722579711
-    simulator.z0["e0_P_LV_st6_i1"] = 0.08850626933441658
-    simulator.z0["e0_P_LV_st6_i2"] = 0.03539382722579711
-    simulator.z0["e0_P_LV_st7_i1"] = 0.08850626933441658
-    simulator.z0["e0_P_LV_st7_i2"] = 0.03539382722579711
-    simulator.z0["e0_P_LV_st8_i1"] = 0.08850626933441658
-    simulator.z0["e0_P_LV_st8_i2"] = 0.03539382722579711
-    simulator.z0["e0_P_LV_st9_i1"] = 0.08850626933441658
-    simulator.z0["e0_P_LV_st9_i2"] = 0.03539382722579711
-    simulator.z0["e0_h_F_st9_i1"] = -277.219985
-    simulator.z0["e0_h_F_st9_i2"] = -285.46076099999993
-    simulator.z0["e0_h_F_st9_i3"] = 0.0
-    simulator.z0["e0_h_LN2_st9_i1"] = -277.219985
-    simulator.z0["e0_h_LN2_st9_i2"] = -285.46076099999993
-    simulator.z0["e0_h_LN2_st9_i3"] = 0.0
-    simulator.z0["e0_h_LVN2_st9_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LVN2_st9_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LVN2_st9_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_LV_st0_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LV_st0_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LV_st0_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_LV_st1_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LV_st1_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LV_st1_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_LV_st2_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LV_st2_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LV_st2_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_LV_st3_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LV_st3_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LV_st3_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_LV_st4_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LV_st4_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LV_st4_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_LV_st5_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LV_st5_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LV_st5_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_LV_st6_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LV_st6_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LV_st6_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_LV_st7_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LV_st7_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LV_st7_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_LV_st8_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LV_st8_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LV_st8_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_LV_st9_i1"] = 42.218607000000006
-    simulator.z0["e0_h_LV_st9_i2"] = 43.773216999999995
-    simulator.z0["e0_h_LV_st9_i3"] = 0.017068499999998876
-    simulator.z0["e0_h_L_st0_i1"] = -277.219985
-    simulator.z0["e0_h_L_st0_i2"] = -285.46076099999993
-    simulator.z0["e0_h_L_st0_i3"] = 0.0
-    simulator.z0["e0_h_L_st1_i1"] = -277.219985
-    simulator.z0["e0_h_L_st1_i2"] = -285.46076099999993
-    simulator.z0["e0_h_L_st1_i3"] = 0.0
-    simulator.z0["e0_h_L_st2_i1"] = -277.219985
-    simulator.z0["e0_h_L_st2_i2"] = -285.46076099999993
-    simulator.z0["e0_h_L_st2_i3"] = 0.0
-    simulator.z0["e0_h_L_st3_i1"] = -277.219985
-    simulator.z0["e0_h_L_st3_i2"] = -285.46076099999993
-    simulator.z0["e0_h_L_st3_i3"] = 0.0
-    simulator.z0["e0_h_L_st4_i1"] = -277.219985
-    simulator.z0["e0_h_L_st4_i2"] = -285.46076099999993
-    simulator.z0["e0_h_L_st4_i3"] = 0.0
-    simulator.z0["e0_h_L_st5_i1"] = -277.219985
-    simulator.z0["e0_h_L_st5_i2"] = -285.46076099999993
-    simulator.z0["e0_h_L_st5_i3"] = 0.0
-    simulator.z0["e0_h_L_st6_i1"] = -277.219985
-    simulator.z0["e0_h_L_st6_i2"] = -285.46076099999993
-    simulator.z0["e0_h_L_st6_i3"] = 0.0
-    simulator.z0["e0_h_L_st7_i1"] = -277.219985
-    simulator.z0["e0_h_L_st7_i2"] = -285.46076099999993
-    simulator.z0["e0_h_L_st7_i3"] = 0.0
-    simulator.z0["e0_h_L_st8_i1"] = -277.219985
-    simulator.z0["e0_h_L_st8_i2"] = -285.46076099999993
-    simulator.z0["e0_h_L_st8_i3"] = 0.0
-    simulator.z0["e0_h_L_st9_i1"] = -277.219985
-    simulator.z0["e0_h_L_st9_i2"] = -285.46076099999993
-    simulator.z0["e0_h_L_st9_i3"] = 0.0
-    simulator.z0["e0_greek_chi_st0"] = 1.0
-    simulator.z0["e0_greek_chi_inv_st0"] = -1.2510706E-13
-    simulator.z0["e0_greek_rho_Lmass_st0"] = 0.045950003
-    simulator.z0["e0_greek_sigma_L_st0"] = 0.31723768
-    simulator.z0["e0_greek_sigma_Ldirac_st0"] = 0.0
-    simulator.z0["e0_greek_DeltaP_st0"] = 4.5758993E-6
-    simulator.z0["e0_greek_DeltaP_st1"] = -5.354092E-6
-    simulator.z0["e0_greek_DeltaP_st2"] = -5.354092E-6
-    simulator.z0["e0_greek_DeltaP_st3"] = -5.354092E-6
-    simulator.z0["e0_greek_DeltaP_st4"] = -5.354092E-6
-    simulator.z0["e0_greek_DeltaP_st5"] = -5.354092E-6
-    simulator.z0["e0_greek_DeltaP_st6"] = -5.354092E-6
-    simulator.z0["e0_greek_DeltaP_st7"] = -5.354092E-6
-    simulator.z0["e0_greek_chi_st1"] = 1.0
-    simulator.z0["e0_greek_sigma_PC_Cond"] = 0.096223615
-    simulator.z0["e0_greek_chi_st2"] = 1.0
-    simulator.z0["e0_greek_chi_st3"] = 1.0
-    simulator.z0["e0_greek_chi_st4"] = 1.0
-    simulator.z0["e0_greek_chi_st5"] = 1.0
-    simulator.z0["e0_greek_chi_st6"] = 1.0
-    simulator.z0["e0_greek_chi_st7"] = 1.0
-    simulator.z0["e0_greek_chi_st8"] = 1.0
-    simulator.z0["e0_greek_chi_inv_st1"] = 8.7477893E-13
-    simulator.z0["e0_greek_chi_inv_st2"] = 8.7477893E-13
-    simulator.z0["e0_greek_chi_inv_st3"] = 8.7477893E-13
-    simulator.z0["e0_greek_zeta_st0"] = -0.99941975
-    simulator.z0["e0_greek_chi_inv_st4"] = 8.7477893E-13
-    simulator.z0["e0_greek_chi_inv_st5"] = 8.7477893E-13
-    simulator.z0["e0_greek_chi_inv_st6"] = 8.7477893E-13
-    simulator.z0["e0_greek_chi_inv_st7"] = 8.7477893E-13
-    simulator.z0["e0_greek_chi_inv_st8"] = 8.7477893E-13
-    simulator.z0["e0_greek_delta_st1"] = -1.6029537E-15
-    simulator.z0["e0_greek_delta_st2"] = -1.6029537E-15
-    simulator.z0["e0_greek_delta_st3"] = -1.6029537E-15
-    simulator.z0["e0_greek_delta_st4"] = -1.6029537E-15
-    simulator.z0["e0_greek_delta_st5"] = -1.6029537E-15
-    simulator.z0["e0_F_L_st0"] = 0.0
-    simulator.z0["e0_greek_delta_st6"] = -1.6029537E-15
-    simulator.z0["e0_greek_delta_st7"] = -1.6029537E-15
-    simulator.z0["e0_greek_delta_st8"] = -1.6029537E-15
-    simulator.z0["e0_F_P_st0"] = 0.0
-    simulator.z0["e0_F_V_st0"] = 0.03227368
-    simulator.z0["e0_F_V_st1"] = 0.03227368
-    simulator.z0["e0_greek_delta_st0"] = 1.4324503E-15
-    simulator.z0["e0_F_L_Cond"] = 1.0644820000000001E-39
-    simulator.z0["e0_F_V_Cond"] = 0.33540294
-    simulator.z0["e0_greek_rho_L_st1"] = 45.95
-    simulator.z0["e0_greek_rho_L_st2"] = 45.95
-    simulator.z0["e0_greek_rho_L_st3"] = 45.95
-    simulator.z0["e0_greek_rho_L_st4"] = 45.95
-    simulator.z0["e0_greek_rho_L_st5"] = 45.95
-    simulator.z0["e0_greek_rho_L_st6"] = 45.95
-    simulator.z0["e0_greek_rho_L_st7"] = 45.95
-    simulator.z0["e0_greek_rho_L_st8"] = 45.95
-    simulator.z0["e0_greek_rho_Lmass_st1"] = 0.045950003
-    simulator.z0["e0_F_L_film_st0"] = 3.355472E-39
-    simulator.z0["e0_greek_rho_Lmass_st2"] = 0.04595
-    simulator.z0["e0_greek_rho_Lmass_st3"] = 0.045950003
-    simulator.z0["e0_greek_rho_Lmass_st4"] = 0.045950003
-    simulator.z0["e0_greek_rho_Lmass_st5"] = 0.045950003
-    simulator.z0["e0_greek_rho_Lmass_st6"] = 0.045950003
-    simulator.z0["e0_greek_rho_Lmass_st7"] = 0.045950003
-    simulator.z0["e0_greek_rho_Lmass_st8"] = 0.045950003
-    simulator.z0["e0_greek_sigma_L_st1"] = 0.024866018
-    simulator.z0["e0_greek_sigma_L_st2"] = 0.024866018
-    simulator.z0["e0_greek_sigma_L_st3"] = 0.024866018
-    simulator.z0["e0_H_st0"] = 0.0022573275
-    simulator.z0["e0_greek_sigma_L_st4"] = 0.024866018
-    simulator.z0["e0_greek_sigma_L_st5"] = 0.024866018
-    simulator.z0["e0_greek_sigma_L_st6"] = 0.024866018
-    simulator.z0["e0_greek_sigma_L_st7"] = 0.024866018
-    simulator.z0["e0_greek_sigma_L_st8"] = 0.024866018
-    simulator.z0["e0_greek_sigma_Ldirac_st1"] = 0.0
-    simulator.z0["e0_greek_sigma_Ldirac_st2"] = 0.0
-    simulator.z0["e0_greek_sigma_Ldirac_st3"] = 0.0
-    simulator.z0["e0_greek_sigma_Ldirac_st4"] = 0.0
-    simulator.z0["e0_greek_sigma_Ldirac_st5"] = 0.0
-    simulator.z0["e0_greek_sigma_Ldirac_st6"] = 0.0
-    simulator.z0["e0_greek_sigma_Ldirac_st7"] = 0.0
-    simulator.z0["e0_greek_sigma_Ldirac_st8"] = 0.0
-    simulator.z0["e0_greek_zeta_st1"] = -0.9994832
-    simulator.z0["e0_greek_zeta_st2"] = -0.9994832
-    simulator.z0["e0_greek_zeta_st3"] = -0.9994832
-    simulator.z0["e0_greek_zeta_st4"] = -0.9994832
-    simulator.z0["e0_greek_zeta_st5"] = -0.9994832
-    simulator.z0["e0_greek_zeta_st6"] = -0.9994832
-    simulator.z0["e0_greek_zeta_st7"] = -0.9994832
-    simulator.z0["e0_greek_zeta_st8"] = -0.9994832
-    simulator.z0["e0_F_L_st1"] = -9.303999999999999E-41
-    simulator.z0["e0_F_L_st2"] = -9.303999999999999E-41
-    simulator.z0["e0_F_L_st3"] = -9.303999999999999E-41
-    simulator.z0["e0_F_L_st4"] = -9.303999999999999E-41
-    simulator.z0["e0_F_L_st5"] = -9.303999999999999E-41
-    simulator.z0["e0_F_L_st6"] = -9.303999999999999E-41
-    simulator.z0["e0_F_L_st7"] = -9.303999999999999E-41
-    simulator.z0["e0_F_L_st8"] = -9.303999999999999E-41
-    simulator.z0["e0_F_V_st2"] = 0.03227368
-    simulator.z0["e0_F_V_st3"] = 0.03227368
-    simulator.z0["e0_F_V_st4"] = 0.03227368
-    simulator.z0["e0_F_V_st5"] = 0.03227368
-    simulator.z0["e0_F_V_st6"] = 0.03227368
-    simulator.z0["e0_F_V_st7"] = 0.03227368
-    simulator.z0["e0_F_V_st8"] = 0.03227368
-    simulator.z0["e0_F_V_st9"] = 0.03227368
-    simulator.z0["e0_F_L_film_st1"] = -3.7416930000000005E-39
-    simulator.z0["e0_F_L_film_st2"] = -3.7416930000000005E-39
-    simulator.z0["e0_F_L_film_st3"] = -3.7416930000000005E-39
-    simulator.z0["e0_HU_L_st0"] = 1.6542631E-14
-    simulator.z0["e0_F_L_film_st4"] = -3.7416930000000005E-39
-    simulator.z0["e0_F_L_film_st5"] = -3.7416930000000005E-39
-    simulator.z0["e0_F_L_film_st6"] = -3.7416930000000005E-39
-    simulator.z0["e0_F_L_film_st7"] = -3.7416930000000005E-39
-    simulator.z0["e0_F_L_film_st8"] = -3.7416930000000005E-39
-    simulator.z0["e0_H_st1"] = 2.8217028E-4
-    simulator.z0["e0_H_st2"] = 2.8217028E-4
-    simulator.z0["e0_H_st3"] = 2.8217028E-4
-    simulator.z0["e0_H_st4"] = 2.8217028E-4
-    simulator.z0["e0_H_st5"] = 2.8217028E-4
-    simulator.z0["e0_HU_V_st0"] = 0.13225344
-    simulator.z0["e0_H_st6"] = 2.8217028E-4
-    simulator.z0["e0_H_st7"] = 2.8217028E-4
-    simulator.z0["e0_H_st8"] = 2.8217028E-4
-    simulator.z0["e0_K_st0_i1"] = 0.08429179
-    simulator.z0["e0_K_st0_i2"] = 0.03370845
-    simulator.z0["e0_HU_L_st1"] = -1.4462264E-14
-    simulator.z0["e0_HU_L_st2"] = -1.4462264E-14
-    simulator.z0["e0_HU_L_st3"] = -1.4462264E-14
-    simulator.z0["e0_HU_L_st4"] = -1.4462264E-14
-    simulator.z0["e0_HU_L_st5"] = -1.4462264E-14
-    simulator.z0["e0_HU_L_st6"] = -1.4462264E-14
-    simulator.z0["e0_HU_L_st7"] = -1.4462264E-14
-    simulator.z0["e0_HU_L_st8"] = -1.4462264E-14
-    simulator.z0["e0_HU_V_st1"] = 0.016531762
-    simulator.z0["e0_HU_V_st2"] = 0.016531762
-    simulator.z0["e0_HU_V_st3"] = 0.016531762
-    simulator.z0["e0_HU_V_st4"] = 0.016531762
-    simulator.z0["e0_HU_V_st5"] = 0.016531762
-    simulator.z0["e0_HU_V_st6"] = 0.016531762
-    simulator.z0["e0_HU_V_st7"] = 0.016531762
-    simulator.z0["e0_HU_V_st8"] = 0.016531762
-    simulator.z0["e0_K_st1_i1"] = 0.08429143
-    simulator.z0["e0_K_st2_i1"] = 0.08429186
-    simulator.z0["e0_K_st3_i1"] = 0.08429143
-    simulator.z0["e0_K_st4_i1"] = 0.08429143
-    simulator.z0["e0_K_st5_i1"] = 0.08429143
-    simulator.z0["e0_K_st6_i1"] = 0.08429143
-    simulator.z0["e0_K_st7_i1"] = 0.08429143
-    simulator.z0["e0_M_L_st0"] = 0.001
-    simulator.z0["e0_K_st8_i1"] = 0.08429143
-    simulator.z0["e0_K_st1_i2"] = 0.033708304
-    simulator.z0["e0_K_st2_i2"] = 0.03370845
-    simulator.z0["e0_K_st3_i2"] = 0.03370845
-    simulator.z0["e0_K_st4_i2"] = 0.03370845
-    simulator.z0["e0_K_st5_i2"] = 0.03370845
-    simulator.z0["e0_K_st6_i2"] = 0.03370845
-    simulator.z0["e0_K_st7_i2"] = 0.03370845
-    simulator.z0["e0_K_st8_i2"] = 0.03370845
-    simulator.z0["e0_P_st0"] = 1.0499986
-    simulator.z0["e0_M_L_st1"] = 0.001
-    simulator.z0["e0_M_L_st2"] = 0.001
-    simulator.z0["e0_M_L_st3"] = 0.001
-    simulator.z0["e0_M_L_st4"] = 0.001
-    simulator.z0["e0_M_L_st5"] = 0.001
-    simulator.z0["e0_M_L_st6"] = 0.001
-    simulator.z0["e0_M_L_st7"] = 0.001
-    simulator.z0["e0_M_L_st8"] = 0.001
-    simulator.z0["e0_P_st1"] = 1.0500032
-    simulator.z0["e0_P_st2"] = 1.0500032
-    simulator.z0["e0_P_st3"] = 1.0500032
-    simulator.z0["e0_P_st4"] = 1.0500032
-    simulator.z0["e0_P_st5"] = 1.0500032
-    simulator.z0["e0_P_st6"] = 1.0500032
-    simulator.z0["e0_P_st7"] = 1.0500032
-    simulator.z0["e0_P_st8"] = 1.0500032
-    simulator.z0["e0_T_st1"] = 300.0
-    simulator.z0["e0_T_st2"] = 300.0
-    simulator.z0["e0_T_st3"] = 300.0
-    simulator.z0["e0_T_st4"] = 300.0
-    simulator.z0["e0_T_st5"] = 300.0
-    simulator.z0["e0_T_st0"] = 300.0
-    simulator.z0["e0_T_st6"] = 300.0
-    simulator.z0["e0_T_st7"] = 300.0
-    simulator.z0["e0_T_st8"] = 300.0
-    simulator.z0["e0_V_L_st1"] = -3.1473918E-16
-    simulator.z0["e0_V_L_st2"] = -3.1473918E-16
-    simulator.z0["e0_V_L_st3"] = -3.1473918E-16
-    simulator.z0["e0_V_L_st4"] = -3.1473918E-16
-    simulator.z0["e0_V_L_st5"] = -3.1473918E-16
-    simulator.z0["e0_V_L_st6"] = -3.1473918E-16
-    simulator.z0["e0_V_L_st7"] = -3.1473918E-16
-    simulator.z0["e0_V_L_st8"] = -3.1473918E-16
-    simulator.z0["e0_V_V_st1"] = 3.92699E-4
-    simulator.z0["e0_V_L_st0"] = 3.6001373000000003E-16
-    simulator.z0["e0_V_V_st2"] = 3.92699E-4
-    simulator.z0["e0_V_V_st3"] = 3.92699E-4
-    simulator.z0["e0_V_V_st4"] = 3.92699E-4
-    simulator.z0["e0_V_V_st5"] = 3.92699E-4
-    simulator.z0["e0_V_V_st6"] = 3.92699E-4
-    simulator.z0["e0_V_V_st7"] = 3.92699E-4
-    simulator.z0["e0_V_V_st8"] = 3.92699E-4
-    simulator.z0["e0_V_V_st0"] = 0.00314159
-    simulator.z0["e0_aux_L_st1"] = -3.0512713E-6
-    simulator.z0["e0_aux_L_st2"] = -3.0512713E-6
-    simulator.z0["e0_aux_L_st3"] = -3.0512713E-6
-    simulator.z0["e0_aux_L_st4"] = -3.0512713E-6
-    simulator.z0["e0_aux_L_st5"] = -3.0512713E-6
-    simulator.z0["e0_aux_L_st6"] = -3.0512713E-6
-    simulator.z0["e0_aux_L_st7"] = -3.0512713E-6
-    simulator.z0["e0_aux_L_st8"] = -3.0512713E-6
-    simulator.z0["e0_aux_V_c_st1"] = 4.5758993E-6
-    simulator.z0["e0_aux_V_c_st2"] = 4.5758993E-6
-    simulator.z0["e0_aux_V_c_st3"] = 4.5758993E-6
-    simulator.z0["e0_aux_V_c_st4"] = 4.5758993E-6
-    simulator.z0["e0_aux_V_c_st5"] = 4.5758993E-6
-    simulator.z0["e0_aux_V_c_st6"] = 4.5758993E-6
-    simulator.z0["e0_aux_V_c_st7"] = 4.5758993E-6
-    simulator.z0["e0_aux_V_c_st8"] = 4.5758993E-6
-    simulator.z0["e0_aux_mid_max_st1"] = 1.0
-    simulator.z0["e0_aux_mid_max_st2"] = 1.0
-    simulator.z0["e0_aux_mid_max_st3"] = 1.0
-    simulator.z0["e0_aux_mid_max_st4"] = 1.0
-    simulator.z0["e0_aux_mid_max_st5"] = 1.0
-    simulator.z0["e0_aux_mid_max_st6"] = 1.0
-    simulator.z0["e0_aux_mid_max_st7"] = 1.0
-    simulator.z0["e0_aux_mid_max_st8"] = 1.0
-    simulator.z0["e0_aux_mid_min_st1"] = -0.9994832
-    simulator.z0["e0_aux_mid_min_st2"] = -0.9994832
-    simulator.z0["e0_aux_mid_min_st3"] = -0.9994832
-    simulator.z0["e0_aux_mid_min_st4"] = -0.9994832
-    simulator.z0["e0_aux_mid_min_st5"] = -0.9994832
-    simulator.z0["e0_aux_L_st0"] = -3.9269875E-7
-    simulator.z0["e0_aux_mid_min_st6"] = -0.9994832
-    simulator.z0["e0_aux_mid_min_st7"] = -0.9994832
-    simulator.z0["e0_aux_mid_min_st8"] = -0.9994832
-    simulator.z0["e0_aux_PC_st0"] = -1.3692085E-6
-    simulator.z0["e0_g_V_b_st1"] = 9.999347E-6
-    simulator.z0["e0_g_V_b_st2"] = 9.999992E-6
-    simulator.z0["e0_g_V_b_st3"] = 9.999347E-6
-    simulator.z0["e0_g_V_b_st4"] = 9.999347E-6
-    simulator.z0["e0_g_V_b_st5"] = 9.999347E-6
-    simulator.z0["e0_g_V_b_st6"] = 9.999347E-6
-    simulator.z0["e0_g_V_b_st7"] = 9.999347E-6
-    simulator.z0["e0_g_V_b_st8"] = 9.999347E-6
-    simulator.z0["e0_g_V_c_st1"] = 0.0021517193
-    simulator.z0["e0_aux_V_c_st0"] = 0.04999863
-    simulator.z0["e0_g_V_c_st2"] = 0.0021517193
-    simulator.z0["e0_g_V_c_st3"] = 0.0021517193
-    simulator.z0["e0_g_V_c_st4"] = 0.0021517193
-    simulator.z0["e0_g_V_c_st5"] = 0.0021517193
-    simulator.z0["e0_g_V_c_st6"] = 0.0021517193
-    simulator.z0["e0_g_V_c_st7"] = 0.0021517193
-    simulator.z0["e0_g_V_c_st8"] = 0.0021517193
-    simulator.z0["e0_aux_mid_max_st0"] = 1.0
-    simulator.z0["e0_aux_mid_min_st0"] = -0.99941975
-    simulator.z0["e0_h_L_st1"] = -0.14466123
-    simulator.z0["e0_h_L_st2"] = -0.14466123
-    simulator.z0["e0_h_L_st3"] = -0.14466123
-    simulator.z0["e0_h_L_st4"] = -0.14466123
-    simulator.z0["e0_h_L_st5"] = -0.14466123
-    simulator.z0["e0_h_L_st6"] = -0.14466123
-    simulator.z0["e0_h_L_st7"] = -0.14466123
-    simulator.z0["e0_h_L_st8"] = -0.14466123
-    simulator.z0["e0_g_V_b_st0"] = 9.999921E-6
-    simulator.z0["e0_g_V_c_st0"] = 0.22360374
-    simulator.z0["e0_h_V_st2"] = 0.017068375
-    simulator.z0["e0_h_V_st3"] = 0.017068375
-    simulator.z0["e0_h_V_st4"] = 0.017068375
-    simulator.z0["e0_h_V_st5"] = 0.017068375
-    simulator.z0["e0_h_V_st6"] = 0.017068375
-    simulator.z0["e0_h_V_st7"] = 0.017068375
-    simulator.z0["e0_h_V_st8"] = 0.017068375
-    simulator.z0["e0_h_V_st9"] = 0.017068375
-    simulator.z0["e0_res_st1"] = 1.0E-12
-    simulator.z0["e0_res_st2"] = 1.0E-12
-    simulator.z0["e0_res_st3"] = 1.0E-12
-    simulator.z0["e0_res_st4"] = 1.0E-12
-    simulator.z0["e0_res_st5"] = 1.0E-12
-    simulator.z0["e0_res_st6"] = 1.0E-12
-    simulator.z0["e0_res_st7"] = 1.0E-12
-    simulator.z0["e0_res_st8"] = 1.0E-12
-    simulator.z0["e0_x_st1_i1"] = -3.4701466E-4
-    simulator.z0["e0_x_st2_i1"] = -3.4222598E-4
-    simulator.z0["e0_x_st3_i1"] = -3.4701466E-4
-    simulator.z0["e0_x_st4_i1"] = -3.4701466E-4
-    simulator.z0["e0_x_st5_i1"] = -3.4701466E-4
-    simulator.z0["e0_x_st6_i1"] = -3.4701466E-4
-    simulator.z0["e0_x_st7_i1"] = -3.4701466E-4
-    simulator.z0["e0_x_st8_i1"] = -3.4701466E-4
-    simulator.z0["e0_x_st1_i2"] = 8.437609E-4
-    simulator.z0["e0_x_st2_i2"] = 8.437609E-4
-    simulator.z0["e0_x_st3_i2"] = 8.437609E-4
-    simulator.z0["e0_h_L_st0"] = -0.16315421
-    simulator.z0["e0_x_st4_i2"] = 8.437609E-4
-    simulator.z0["e0_x_st5_i2"] = 8.437609E-4
-    simulator.z0["e0_x_st6_i2"] = 8.437609E-4
-    simulator.z0["e0_x_st7_i2"] = 8.437609E-4
-    simulator.z0["e0_x_st8_i2"] = 8.437609E-4
-    simulator.z0["e0_x_st1_i3"] = 2.0000016E-5
-    simulator.z0["e0_x_st2_i3"] = 2.0000016E-5
-    simulator.z0["e0_x_st3_i3"] = 2.0000018E-5
-    simulator.z0["e0_x_st4_i3"] = 2.0000018E-5
-    simulator.z0["e0_x_st5_i3"] = 2.0000018E-5
-    simulator.z0["e0_x_st6_i3"] = 2.0000018E-5
-    simulator.z0["e0_x_st7_i3"] = 2.0000018E-5
-    simulator.z0["e0_x_st8_i3"] = 2.0000018E-5
-    simulator.z0["e0_y_st2_i1"] = -2.8846864E-5
-    simulator.z0["e0_y_st3_i1"] = -2.9250361E-5
-    simulator.z0["e0_y_st4_i1"] = -2.9250361E-5
-    simulator.z0["e0_y_st5_i1"] = -2.9250361E-5
-    simulator.z0["e0_y_st6_i1"] = -2.9250361E-5
-    simulator.z0["e0_y_st7_i1"] = -2.9250361E-5
-    simulator.z0["e0_y_st8_i1"] = -2.9250361E-5
-    simulator.z0["e0_y_st9_i1"] = -2.9250361E-5
-    simulator.z0["e0_y_st2_i2"] = 2.844175E-5
-    simulator.z0["e0_y_st3_i2"] = 2.844175E-5
-    simulator.z0["e0_y_st4_i2"] = 2.844175E-5
-    simulator.z0["e0_y_st5_i2"] = 2.844175E-5
-    simulator.z0["e0_y_st6_i2"] = 2.844175E-5
-    simulator.z0["e0_y_st7_i2"] = 2.844175E-5
-    simulator.z0["e0_y_st8_i2"] = 2.844175E-5
-    simulator.z0["e0_y_st9_i2"] = 2.844175E-5
-    simulator.z0["e0_y_st2_i3"] = 1.0000008
-    simulator.z0["e0_y_st3_i3"] = 1.0
-    simulator.z0["e0_y_st4_i3"] = 1.0
-    simulator.z0["e0_y_st5_i3"] = 1.0
-    simulator.z0["e0_y_st6_i3"] = 1.0
-    simulator.z0["e0_y_st7_i3"] = 1.0
-    simulator.z0["e0_y_st8_i3"] = 1.0
-    simulator.z0["e0_y_st9_i3"] = 1.0
-    simulator.z0["e0_greek_DeltaP_st8"] = -5.354092E-6
-    simulator.z0["e0_greek_chi_st9"] = 1.0
-    simulator.z0["e0_h_V_st0"] = 0.017068196
-    simulator.z0["e0_greek_chi_inv_st9"] = -1.2497887E-13
-    simulator.z0["e0_greek_rho_L_st9"] = 45.95
-    simulator.z0["e0_greek_rho_Lmass_st9"] = 0.045950003
-    simulator.z0["e0_greek_sigma_Ldirac_st9"] = 0.0
-    simulator.z0["e0_greek_zeta_st9"] = -0.9994832
-    simulator.z0["e0_h_V_st1"] = 0.017068373
-    simulator.z0["e0_F_N2_st9"] = 0.0
-    simulator.z0["e0_F_SV_st9"] = 0.0
-    simulator.z0["e0_H_st9"] = 0.020550165
-    simulator.z0["e0_HU_L_st9"] = 1.5044585E-13
-    simulator.z0["e0_HU_V_st9"] = 1.2039908
-    simulator.z0["e0_res_st0"] = 1.0E-12
-    simulator.z0["e0_K_st9_i1"] = 0.08429143
-    simulator.z0["e0_K_st9_i2"] = 0.03370845
-    simulator.z0["e0_M_L_st9"] = 0.001
-    simulator.z0["e0_P_st9"] = 1.0500032
-    simulator.z0["e0_T_st9"] = 300.0
-    simulator.z0["e0_V_L_st9"] = 3.2741205E-15
-    simulator.z0["e0_V_V_st9"] = 0.0286
-    simulator.z0["e0_aux_N2_c_st9"] = 0.1
-    simulator.z0["e0_aux_SV_c_st9"] = -0.3
-    simulator.z0["e0_x_st0_i1"] = -3.9136226E-4
-    simulator.z0["e0_aux_V_c_st9"] = -5.354092E-6
-    simulator.z0["e0_aux_mid_max_st9"] = 1.0
-    simulator.z0["e0_aux_mid_min_st9"] = -0.9994832
-    simulator.z0["e0_g_SV_b_st9"] = 9.999992E-6
-    simulator.z0["e0_g_V_b_st9"] = 9.999347E-6
-    simulator.z0["e0_g_N2_c_st9"] = 0.2236116
-    simulator.z0["e0_g_SV_c_st9"] = 1.0000028E-6
-    simulator.z0["e0_x_st0_i2"] = 9.516112E-4
-    simulator.z0["e0_g_V_c_st9"] = 2.1515807E-4
-    simulator.z0["e0_h_F_st9"] = -284.22464
-    simulator.z0["e0_h_L_st9"] = -0.14266495
-    simulator.z0["e0_x_st0_i3"] = 2.0000018E-5
-    simulator.z0["e0_h_N2_st9"] = 0.0170685
-    simulator.z0["e0_res_st9"] = 1.0E-12
-    simulator.z0["e0_y_st0_i1"] = -3.2988628E-5
-    simulator.z0["e0_x_st9_i1"] = -3.4701466E-4
-    simulator.z0["e0_x_st9_i2"] = 8.437609E-4
-    simulator.z0["e0_x_st9_i3"] = 2.0000018E-5
-    simulator.z0["e0_y_st1_i1"] = -2.9250361E-5
-    simulator.z0["e0_y_st0_i2"] = 3.207734E-5
-    simulator.z0["e0_y_st1_i2"] = 2.844175E-5
-    simulator.z0["e0_y_st0_i3"] = 1.000001
-    simulator.z0["e0_y_st1_i3"] = 1.0000008
-    simulator.z0["e0_greek_rho_L_st0"] = 45.95
+    simulator.z0['e0_P_LV_st0_i1'] = trajectory['Flowsheet.'+'e0_P_LV_st0_i1'][init_ind]
+    simulator.z0['e0_P_LV_st0_i2'] = trajectory['Flowsheet.'+'e0_P_LV_st0_i2'][init_ind]
+    simulator.z0['e0_P_LV_st1_i1'] = trajectory['Flowsheet.'+'e0_P_LV_st1_i1'][init_ind]
+    simulator.z0['e0_P_LV_st1_i2'] = trajectory['Flowsheet.'+'e0_P_LV_st1_i2'][init_ind]
+    simulator.z0['e0_P_LV_st2_i1'] = trajectory['Flowsheet.'+'e0_P_LV_st2_i1'][init_ind]
+    simulator.z0['e0_P_LV_st2_i2'] = trajectory['Flowsheet.'+'e0_P_LV_st2_i2'][init_ind]
+    simulator.z0['e0_P_LV_st3_i1'] = trajectory['Flowsheet.'+'e0_P_LV_st3_i1'][init_ind]
+    simulator.z0['e0_P_LV_st3_i2'] = trajectory['Flowsheet.'+'e0_P_LV_st3_i2'][init_ind]
+    simulator.z0['e0_P_LV_st4_i1'] = trajectory['Flowsheet.'+'e0_P_LV_st4_i1'][init_ind]
+    simulator.z0['e0_P_LV_st4_i2'] = trajectory['Flowsheet.'+'e0_P_LV_st4_i2'][init_ind]
+    simulator.z0['e0_P_LV_st5_i1'] = trajectory['Flowsheet.'+'e0_P_LV_st5_i1'][init_ind]
+    simulator.z0['e0_P_LV_st5_i2'] = trajectory['Flowsheet.'+'e0_P_LV_st5_i2'][init_ind]
+    simulator.z0['e0_P_LV_st6_i1'] = trajectory['Flowsheet.'+'e0_P_LV_st6_i1'][init_ind]
+    simulator.z0['e0_P_LV_st6_i2'] = trajectory['Flowsheet.'+'e0_P_LV_st6_i2'][init_ind]
+    simulator.z0['e0_P_LV_st7_i1'] = trajectory['Flowsheet.'+'e0_P_LV_st7_i1'][init_ind]
+    simulator.z0['e0_P_LV_st7_i2'] = trajectory['Flowsheet.'+'e0_P_LV_st7_i2'][init_ind]
+    simulator.z0['e0_P_LV_st8_i1'] = trajectory['Flowsheet.'+'e0_P_LV_st8_i1'][init_ind]
+    simulator.z0['e0_P_LV_st8_i2'] = trajectory['Flowsheet.'+'e0_P_LV_st8_i2'][init_ind]
+    simulator.z0['e0_P_LV_st9_i1'] = trajectory['Flowsheet.'+'e0_P_LV_st9_i1'][init_ind]
+    simulator.z0['e0_P_LV_st9_i2'] = trajectory['Flowsheet.'+'e0_P_LV_st9_i2'][init_ind]
+    simulator.z0['e0_h_F_st9_i1'] = trajectory['Flowsheet.'+'e0_h_F_st9_i1'][init_ind]
+    simulator.z0['e0_h_F_st9_i2'] = trajectory['Flowsheet.'+'e0_h_F_st9_i2'][init_ind]
+    simulator.z0['e0_h_F_st9_i3'] = trajectory['Flowsheet.'+'e0_h_F_st9_i3'][init_ind]
+    simulator.z0['e0_h_LN2_st9_i1'] = trajectory['Flowsheet.'+'e0_h_LN2_st9_i1'][init_ind]
+    simulator.z0['e0_h_LN2_st9_i2'] = trajectory['Flowsheet.'+'e0_h_LN2_st9_i2'][init_ind]
+    simulator.z0['e0_h_LN2_st9_i3'] = trajectory['Flowsheet.'+'e0_h_LN2_st9_i3'][init_ind]
+    simulator.z0['e0_h_LVN2_st9_i1'] = trajectory['Flowsheet.'+'e0_h_LVN2_st9_i1'][init_ind]
+    simulator.z0['e0_h_LVN2_st9_i2'] = trajectory['Flowsheet.'+'e0_h_LVN2_st9_i2'][init_ind]
+    simulator.z0['e0_h_LVN2_st9_i3'] = trajectory['Flowsheet.'+'e0_h_LVN2_st9_i3'][init_ind]
+    simulator.z0['e0_h_LV_st0_i1'] = trajectory['Flowsheet.'+'e0_h_LV_st0_i1'][init_ind]
+    simulator.z0['e0_h_LV_st0_i2'] = trajectory['Flowsheet.'+'e0_h_LV_st0_i2'][init_ind]
+    simulator.z0['e0_h_LV_st0_i3'] = trajectory['Flowsheet.'+'e0_h_LV_st0_i3'][init_ind]
+    simulator.z0['e0_h_LV_st1_i1'] = trajectory['Flowsheet.'+'e0_h_LV_st1_i1'][init_ind]
+    simulator.z0['e0_h_LV_st1_i2'] = trajectory['Flowsheet.'+'e0_h_LV_st1_i2'][init_ind]
+    simulator.z0['e0_h_LV_st1_i3'] = trajectory['Flowsheet.'+'e0_h_LV_st1_i3'][init_ind]
+    simulator.z0['e0_h_LV_st2_i1'] = trajectory['Flowsheet.'+'e0_h_LV_st2_i1'][init_ind]
+    simulator.z0['e0_h_LV_st2_i2'] = trajectory['Flowsheet.'+'e0_h_LV_st2_i2'][init_ind]
+    simulator.z0['e0_h_LV_st2_i3'] = trajectory['Flowsheet.'+'e0_h_LV_st2_i3'][init_ind]
+    simulator.z0['e0_h_LV_st3_i1'] = trajectory['Flowsheet.'+'e0_h_LV_st3_i1'][init_ind]
+    simulator.z0['e0_h_LV_st3_i2'] = trajectory['Flowsheet.'+'e0_h_LV_st3_i2'][init_ind]
+    simulator.z0['e0_h_LV_st3_i3'] = trajectory['Flowsheet.'+'e0_h_LV_st3_i3'][init_ind]
+    simulator.z0['e0_h_LV_st4_i1'] = trajectory['Flowsheet.'+'e0_h_LV_st4_i1'][init_ind]
+    simulator.z0['e0_h_LV_st4_i2'] = trajectory['Flowsheet.'+'e0_h_LV_st4_i2'][init_ind]
+    simulator.z0['e0_h_LV_st4_i3'] = trajectory['Flowsheet.'+'e0_h_LV_st4_i3'][init_ind]
+    simulator.z0['e0_h_LV_st5_i1'] = trajectory['Flowsheet.'+'e0_h_LV_st5_i1'][init_ind]
+    simulator.z0['e0_h_LV_st5_i2'] = trajectory['Flowsheet.'+'e0_h_LV_st5_i2'][init_ind]
+    simulator.z0['e0_h_LV_st5_i3'] = trajectory['Flowsheet.'+'e0_h_LV_st5_i3'][init_ind]
+    simulator.z0['e0_h_LV_st6_i1'] = trajectory['Flowsheet.'+'e0_h_LV_st6_i1'][init_ind]
+    simulator.z0['e0_h_LV_st6_i2'] = trajectory['Flowsheet.'+'e0_h_LV_st6_i2'][init_ind]
+    simulator.z0['e0_h_LV_st6_i3'] = trajectory['Flowsheet.'+'e0_h_LV_st6_i3'][init_ind]
+    simulator.z0['e0_h_LV_st7_i1'] = trajectory['Flowsheet.'+'e0_h_LV_st7_i1'][init_ind]
+    simulator.z0['e0_h_LV_st7_i2'] = trajectory['Flowsheet.'+'e0_h_LV_st7_i2'][init_ind]
+    simulator.z0['e0_h_LV_st7_i3'] = trajectory['Flowsheet.'+'e0_h_LV_st7_i3'][init_ind]
+    simulator.z0['e0_h_LV_st8_i1'] = trajectory['Flowsheet.'+'e0_h_LV_st8_i1'][init_ind]
+    simulator.z0['e0_h_LV_st8_i2'] = trajectory['Flowsheet.'+'e0_h_LV_st8_i2'][init_ind]
+    simulator.z0['e0_h_LV_st8_i3'] = trajectory['Flowsheet.'+'e0_h_LV_st8_i3'][init_ind]
+    simulator.z0['e0_h_LV_st9_i1'] = trajectory['Flowsheet.'+'e0_h_LV_st9_i1'][init_ind]
+    simulator.z0['e0_h_LV_st9_i2'] = trajectory['Flowsheet.'+'e0_h_LV_st9_i2'][init_ind]
+    simulator.z0['e0_h_LV_st9_i3'] = trajectory['Flowsheet.'+'e0_h_LV_st9_i3'][init_ind]
+    simulator.z0['e0_h_L_st0_i1'] = trajectory['Flowsheet.'+'e0_h_L_st0_i1'][init_ind]
+    simulator.z0['e0_h_L_st0_i2'] = trajectory['Flowsheet.'+'e0_h_L_st0_i2'][init_ind]
+    simulator.z0['e0_h_L_st0_i3'] = trajectory['Flowsheet.'+'e0_h_L_st0_i3'][init_ind]
+    simulator.z0['e0_h_L_st1_i1'] = trajectory['Flowsheet.'+'e0_h_L_st1_i1'][init_ind]
+    simulator.z0['e0_h_L_st1_i2'] = trajectory['Flowsheet.'+'e0_h_L_st1_i2'][init_ind]
+    simulator.z0['e0_h_L_st1_i3'] = trajectory['Flowsheet.'+'e0_h_L_st1_i3'][init_ind]
+    simulator.z0['e0_h_L_st2_i1'] = trajectory['Flowsheet.'+'e0_h_L_st2_i1'][init_ind]
+    simulator.z0['e0_h_L_st2_i2'] = trajectory['Flowsheet.'+'e0_h_L_st2_i2'][init_ind]
+    simulator.z0['e0_h_L_st2_i3'] = trajectory['Flowsheet.'+'e0_h_L_st2_i3'][init_ind]
+    simulator.z0['e0_h_L_st3_i1'] = trajectory['Flowsheet.'+'e0_h_L_st3_i1'][init_ind]
+    simulator.z0['e0_h_L_st3_i2'] = trajectory['Flowsheet.'+'e0_h_L_st3_i2'][init_ind]
+    simulator.z0['e0_h_L_st3_i3'] = trajectory['Flowsheet.'+'e0_h_L_st3_i3'][init_ind]
+    simulator.z0['e0_h_L_st4_i1'] = trajectory['Flowsheet.'+'e0_h_L_st4_i1'][init_ind]
+    simulator.z0['e0_h_L_st4_i2'] = trajectory['Flowsheet.'+'e0_h_L_st4_i2'][init_ind]
+    simulator.z0['e0_h_L_st4_i3'] = trajectory['Flowsheet.'+'e0_h_L_st4_i3'][init_ind]
+    simulator.z0['e0_h_L_st5_i1'] = trajectory['Flowsheet.'+'e0_h_L_st5_i1'][init_ind]
+    simulator.z0['e0_h_L_st5_i2'] = trajectory['Flowsheet.'+'e0_h_L_st5_i2'][init_ind]
+    simulator.z0['e0_h_L_st5_i3'] = trajectory['Flowsheet.'+'e0_h_L_st5_i3'][init_ind]
+    simulator.z0['e0_h_L_st6_i1'] = trajectory['Flowsheet.'+'e0_h_L_st6_i1'][init_ind]
+    simulator.z0['e0_h_L_st6_i2'] = trajectory['Flowsheet.'+'e0_h_L_st6_i2'][init_ind]
+    simulator.z0['e0_h_L_st6_i3'] = trajectory['Flowsheet.'+'e0_h_L_st6_i3'][init_ind]
+    simulator.z0['e0_h_L_st7_i1'] = trajectory['Flowsheet.'+'e0_h_L_st7_i1'][init_ind]
+    simulator.z0['e0_h_L_st7_i2'] = trajectory['Flowsheet.'+'e0_h_L_st7_i2'][init_ind]
+    simulator.z0['e0_h_L_st7_i3'] = trajectory['Flowsheet.'+'e0_h_L_st7_i3'][init_ind]
+    simulator.z0['e0_h_L_st8_i1'] = trajectory['Flowsheet.'+'e0_h_L_st8_i1'][init_ind]
+    simulator.z0['e0_h_L_st8_i2'] = trajectory['Flowsheet.'+'e0_h_L_st8_i2'][init_ind]
+    simulator.z0['e0_h_L_st8_i3'] = trajectory['Flowsheet.'+'e0_h_L_st8_i3'][init_ind]
+    simulator.z0['e0_h_L_st9_i1'] = trajectory['Flowsheet.'+'e0_h_L_st9_i1'][init_ind]
+    simulator.z0['e0_h_L_st9_i2'] = trajectory['Flowsheet.'+'e0_h_L_st9_i2'][init_ind]
+    simulator.z0['e0_h_L_st9_i3'] = trajectory['Flowsheet.'+'e0_h_L_st9_i3'][init_ind]
+    simulator.z0['e0_greek_chi_st0'] = trajectory['Flowsheet.'+'e0_greek_chi_st0'][init_ind]
+    simulator.z0['e0_greek_chi_inv_st0'] = trajectory['Flowsheet.'+'e0_greek_chi_inv_st0'][init_ind]
+    simulator.z0['e0_greek_rho_Lmass_st0'] = trajectory['Flowsheet.'+'e0_greek_rho_Lmass_st0'][init_ind]
+    simulator.z0['e0_greek_sigma_L_st0'] = trajectory['Flowsheet.'+'e0_greek_sigma_L_st0'][init_ind]
+    simulator.z0['e0_greek_sigma_Ldirac_st0'] = trajectory['Flowsheet.'+'e0_greek_sigma_Ldirac_st0'][init_ind]
+    simulator.z0['e0_greek_DeltaP_st0'] = trajectory['Flowsheet.'+'e0_greek_DeltaP_st0'][init_ind]
+    simulator.z0['e0_greek_DeltaP_st1'] = trajectory['Flowsheet.'+'e0_greek_DeltaP_st1'][init_ind]
+    simulator.z0['e0_greek_DeltaP_st2'] = trajectory['Flowsheet.'+'e0_greek_DeltaP_st2'][init_ind]
+    simulator.z0['e0_greek_DeltaP_st3'] = trajectory['Flowsheet.'+'e0_greek_DeltaP_st3'][init_ind]
+    simulator.z0['e0_greek_DeltaP_st4'] = trajectory['Flowsheet.'+'e0_greek_DeltaP_st4'][init_ind]
+    simulator.z0['e0_greek_DeltaP_st5'] = trajectory['Flowsheet.'+'e0_greek_DeltaP_st5'][init_ind]
+    simulator.z0['e0_greek_DeltaP_st6'] = trajectory['Flowsheet.'+'e0_greek_DeltaP_st6'][init_ind]
+    simulator.z0['e0_greek_DeltaP_st7'] = trajectory['Flowsheet.'+'e0_greek_DeltaP_st7'][init_ind]
+    simulator.z0['e0_greek_chi_st1'] = trajectory['Flowsheet.'+'e0_greek_chi_st1'][init_ind]
+    simulator.z0['e0_greek_sigma_PC_Cond'] = trajectory['Flowsheet.'+'e0_greek_sigma_PC_Cond'][init_ind]
+    simulator.z0['e0_greek_chi_st2'] = trajectory['Flowsheet.'+'e0_greek_chi_st2'][init_ind]
+    simulator.z0['e0_greek_chi_st3'] = trajectory['Flowsheet.'+'e0_greek_chi_st3'][init_ind]
+    simulator.z0['e0_greek_chi_st4'] = trajectory['Flowsheet.'+'e0_greek_chi_st4'][init_ind]
+    simulator.z0['e0_greek_chi_st5'] = trajectory['Flowsheet.'+'e0_greek_chi_st5'][init_ind]
+    simulator.z0['e0_greek_chi_st6'] = trajectory['Flowsheet.'+'e0_greek_chi_st6'][init_ind]
+    simulator.z0['e0_greek_chi_st7'] = trajectory['Flowsheet.'+'e0_greek_chi_st7'][init_ind]
+    simulator.z0['e0_greek_chi_st8'] = trajectory['Flowsheet.'+'e0_greek_chi_st8'][init_ind]
+    simulator.z0['e0_greek_chi_inv_st1'] = trajectory['Flowsheet.'+'e0_greek_chi_inv_st1'][init_ind]
+    simulator.z0['e0_greek_chi_inv_st2'] = trajectory['Flowsheet.'+'e0_greek_chi_inv_st2'][init_ind]
+    simulator.z0['e0_greek_chi_inv_st3'] = trajectory['Flowsheet.'+'e0_greek_chi_inv_st3'][init_ind]
+    simulator.z0['e0_greek_zeta_st0'] = trajectory['Flowsheet.'+'e0_greek_zeta_st0'][init_ind]
+    simulator.z0['e0_greek_chi_inv_st4'] = trajectory['Flowsheet.'+'e0_greek_chi_inv_st4'][init_ind]
+    simulator.z0['e0_greek_chi_inv_st5'] = trajectory['Flowsheet.'+'e0_greek_chi_inv_st5'][init_ind]
+    simulator.z0['e0_greek_chi_inv_st6'] = trajectory['Flowsheet.'+'e0_greek_chi_inv_st6'][init_ind]
+    simulator.z0['e0_greek_chi_inv_st7'] = trajectory['Flowsheet.'+'e0_greek_chi_inv_st7'][init_ind]
+    simulator.z0['e0_greek_chi_inv_st8'] = trajectory['Flowsheet.'+'e0_greek_chi_inv_st8'][init_ind]
+    simulator.z0['e0_greek_delta_st1'] = trajectory['Flowsheet.'+'e0_greek_delta_st1'][init_ind]
+    simulator.z0['e0_greek_delta_st2'] = trajectory['Flowsheet.'+'e0_greek_delta_st2'][init_ind]
+    simulator.z0['e0_greek_delta_st3'] = trajectory['Flowsheet.'+'e0_greek_delta_st3'][init_ind]
+    simulator.z0['e0_greek_delta_st4'] = trajectory['Flowsheet.'+'e0_greek_delta_st4'][init_ind]
+    simulator.z0['e0_greek_delta_st5'] = trajectory['Flowsheet.'+'e0_greek_delta_st5'][init_ind]
+    simulator.z0['e0_F_L_st0'] = trajectory['Flowsheet.'+'e0_F_L_st0'][init_ind]
+    simulator.z0['e0_greek_delta_st6'] = trajectory['Flowsheet.'+'e0_greek_delta_st6'][init_ind]
+    simulator.z0['e0_greek_delta_st7'] = trajectory['Flowsheet.'+'e0_greek_delta_st7'][init_ind]
+    simulator.z0['e0_greek_delta_st8'] = trajectory['Flowsheet.'+'e0_greek_delta_st8'][init_ind]
+    simulator.z0['e0_F_P_st0'] = trajectory['Flowsheet.'+'e0_F_P_st0'][init_ind]
+    simulator.z0['e0_F_V_st0'] = trajectory['Flowsheet.'+'e0_F_V_st0'][init_ind]
+    simulator.z0['e0_F_V_st1'] = trajectory['Flowsheet.'+'e0_F_V_st1'][init_ind]
+    simulator.z0['e0_greek_delta_st0'] = trajectory['Flowsheet.'+'e0_greek_delta_st0'][init_ind]
+    simulator.z0['e0_F_L_Cond'] = trajectory['Flowsheet.'+'e0_F_L_Cond'][init_ind]
+    simulator.z0['e0_F_V_Cond'] = trajectory['Flowsheet.'+'e0_F_V_Cond'][init_ind]
+    simulator.z0['e0_greek_rho_L_st1'] = trajectory['Flowsheet.'+'e0_greek_rho_L_st1'][init_ind]
+    simulator.z0['e0_greek_rho_L_st2'] = trajectory['Flowsheet.'+'e0_greek_rho_L_st2'][init_ind]
+    simulator.z0['e0_greek_rho_L_st3'] = trajectory['Flowsheet.'+'e0_greek_rho_L_st3'][init_ind]
+    simulator.z0['e0_greek_rho_L_st4'] = trajectory['Flowsheet.'+'e0_greek_rho_L_st4'][init_ind]
+    simulator.z0['e0_greek_rho_L_st5'] = trajectory['Flowsheet.'+'e0_greek_rho_L_st5'][init_ind]
+    simulator.z0['e0_greek_rho_L_st6'] = trajectory['Flowsheet.'+'e0_greek_rho_L_st6'][init_ind]
+    simulator.z0['e0_greek_rho_L_st7'] = trajectory['Flowsheet.'+'e0_greek_rho_L_st7'][init_ind]
+    simulator.z0['e0_greek_rho_L_st8'] = trajectory['Flowsheet.'+'e0_greek_rho_L_st8'][init_ind]
+    simulator.z0['e0_greek_rho_Lmass_st1'] = trajectory['Flowsheet.'+'e0_greek_rho_Lmass_st1'][init_ind]
+    simulator.z0['e0_F_L_film_st0'] = trajectory['Flowsheet.'+'e0_F_L_film_st0'][init_ind]
+    simulator.z0['e0_greek_rho_Lmass_st2'] = trajectory['Flowsheet.'+'e0_greek_rho_Lmass_st2'][init_ind]
+    simulator.z0['e0_greek_rho_Lmass_st3'] = trajectory['Flowsheet.'+'e0_greek_rho_Lmass_st3'][init_ind]
+    simulator.z0['e0_greek_rho_Lmass_st4'] = trajectory['Flowsheet.'+'e0_greek_rho_Lmass_st4'][init_ind]
+    simulator.z0['e0_greek_rho_Lmass_st5'] = trajectory['Flowsheet.'+'e0_greek_rho_Lmass_st5'][init_ind]
+    simulator.z0['e0_greek_rho_Lmass_st6'] = trajectory['Flowsheet.'+'e0_greek_rho_Lmass_st6'][init_ind]
+    simulator.z0['e0_greek_rho_Lmass_st7'] = trajectory['Flowsheet.'+'e0_greek_rho_Lmass_st7'][init_ind]
+    simulator.z0['e0_greek_rho_Lmass_st8'] = trajectory['Flowsheet.'+'e0_greek_rho_Lmass_st8'][init_ind]
+    simulator.z0['e0_greek_sigma_L_st1'] = trajectory['Flowsheet.'+'e0_greek_sigma_L_st1'][init_ind]
+    simulator.z0['e0_greek_sigma_L_st2'] = trajectory['Flowsheet.'+'e0_greek_sigma_L_st2'][init_ind]
+    simulator.z0['e0_greek_sigma_L_st3'] = trajectory['Flowsheet.'+'e0_greek_sigma_L_st3'][init_ind]
+    simulator.z0['e0_H_st0'] = trajectory['Flowsheet.'+'e0_H_st0'][init_ind]
+    simulator.z0['e0_greek_sigma_L_st4'] = trajectory['Flowsheet.'+'e0_greek_sigma_L_st4'][init_ind]
+    simulator.z0['e0_greek_sigma_L_st5'] = trajectory['Flowsheet.'+'e0_greek_sigma_L_st5'][init_ind]
+    simulator.z0['e0_greek_sigma_L_st6'] = trajectory['Flowsheet.'+'e0_greek_sigma_L_st6'][init_ind]
+    simulator.z0['e0_greek_sigma_L_st7'] = trajectory['Flowsheet.'+'e0_greek_sigma_L_st7'][init_ind]
+    simulator.z0['e0_greek_sigma_L_st8'] = trajectory['Flowsheet.'+'e0_greek_sigma_L_st8'][init_ind]
+    simulator.z0['e0_greek_sigma_Ldirac_st1'] = trajectory['Flowsheet.'+'e0_greek_sigma_Ldirac_st1'][init_ind]
+    simulator.z0['e0_greek_sigma_Ldirac_st2'] = trajectory['Flowsheet.'+'e0_greek_sigma_Ldirac_st2'][init_ind]
+    simulator.z0['e0_greek_sigma_Ldirac_st3'] = trajectory['Flowsheet.'+'e0_greek_sigma_Ldirac_st3'][init_ind]
+    simulator.z0['e0_greek_sigma_Ldirac_st4'] = trajectory['Flowsheet.'+'e0_greek_sigma_Ldirac_st4'][init_ind]
+    simulator.z0['e0_greek_sigma_Ldirac_st5'] = trajectory['Flowsheet.'+'e0_greek_sigma_Ldirac_st5'][init_ind]
+    simulator.z0['e0_greek_sigma_Ldirac_st6'] = trajectory['Flowsheet.'+'e0_greek_sigma_Ldirac_st6'][init_ind]
+    simulator.z0['e0_greek_sigma_Ldirac_st7'] = trajectory['Flowsheet.'+'e0_greek_sigma_Ldirac_st7'][init_ind]
+    simulator.z0['e0_greek_sigma_Ldirac_st8'] = trajectory['Flowsheet.'+'e0_greek_sigma_Ldirac_st8'][init_ind]
+    simulator.z0['e0_greek_zeta_st1'] = trajectory['Flowsheet.'+'e0_greek_zeta_st1'][init_ind]
+    simulator.z0['e0_greek_zeta_st2'] = trajectory['Flowsheet.'+'e0_greek_zeta_st2'][init_ind]
+    simulator.z0['e0_greek_zeta_st3'] = trajectory['Flowsheet.'+'e0_greek_zeta_st3'][init_ind]
+    simulator.z0['e0_greek_zeta_st4'] = trajectory['Flowsheet.'+'e0_greek_zeta_st4'][init_ind]
+    simulator.z0['e0_greek_zeta_st5'] = trajectory['Flowsheet.'+'e0_greek_zeta_st5'][init_ind]
+    simulator.z0['e0_greek_zeta_st6'] = trajectory['Flowsheet.'+'e0_greek_zeta_st6'][init_ind]
+    simulator.z0['e0_greek_zeta_st7'] = trajectory['Flowsheet.'+'e0_greek_zeta_st7'][init_ind]
+    simulator.z0['e0_greek_zeta_st8'] = trajectory['Flowsheet.'+'e0_greek_zeta_st8'][init_ind]
+    simulator.z0['e0_F_L_st1'] = trajectory['Flowsheet.'+'e0_F_L_st1'][init_ind]
+    simulator.z0['e0_F_L_st2'] = trajectory['Flowsheet.'+'e0_F_L_st2'][init_ind]
+    simulator.z0['e0_F_L_st3'] = trajectory['Flowsheet.'+'e0_F_L_st3'][init_ind]
+    simulator.z0['e0_F_L_st4'] = trajectory['Flowsheet.'+'e0_F_L_st4'][init_ind]
+    simulator.z0['e0_F_L_st5'] = trajectory['Flowsheet.'+'e0_F_L_st5'][init_ind]
+    simulator.z0['e0_F_L_st6'] = trajectory['Flowsheet.'+'e0_F_L_st6'][init_ind]
+    simulator.z0['e0_F_L_st7'] = trajectory['Flowsheet.'+'e0_F_L_st7'][init_ind]
+    simulator.z0['e0_F_L_st8'] = trajectory['Flowsheet.'+'e0_F_L_st8'][init_ind]
+    simulator.z0['e0_F_V_st2'] = trajectory['Flowsheet.'+'e0_F_V_st2'][init_ind]
+    simulator.z0['e0_F_V_st3'] = trajectory['Flowsheet.'+'e0_F_V_st3'][init_ind]
+    simulator.z0['e0_F_V_st4'] = trajectory['Flowsheet.'+'e0_F_V_st4'][init_ind]
+    simulator.z0['e0_F_V_st5'] = trajectory['Flowsheet.'+'e0_F_V_st5'][init_ind]
+    simulator.z0['e0_F_V_st6'] = trajectory['Flowsheet.'+'e0_F_V_st6'][init_ind]
+    simulator.z0['e0_F_V_st7'] = trajectory['Flowsheet.'+'e0_F_V_st7'][init_ind]
+    simulator.z0['e0_F_V_st8'] = trajectory['Flowsheet.'+'e0_F_V_st8'][init_ind]
+    simulator.z0['e0_F_V_st9'] = trajectory['Flowsheet.'+'e0_F_V_st9'][init_ind]
+    simulator.z0['e0_F_L_film_st1'] = trajectory['Flowsheet.'+'e0_F_L_film_st1'][init_ind]
+    simulator.z0['e0_F_L_film_st2'] = trajectory['Flowsheet.'+'e0_F_L_film_st2'][init_ind]
+    simulator.z0['e0_F_L_film_st3'] = trajectory['Flowsheet.'+'e0_F_L_film_st3'][init_ind]
+    simulator.z0['e0_HU_L_st0'] = trajectory['Flowsheet.'+'e0_HU_L_st0'][init_ind]
+    simulator.z0['e0_F_L_film_st4'] = trajectory['Flowsheet.'+'e0_F_L_film_st4'][init_ind]
+    simulator.z0['e0_F_L_film_st5'] = trajectory['Flowsheet.'+'e0_F_L_film_st5'][init_ind]
+    simulator.z0['e0_F_L_film_st6'] = trajectory['Flowsheet.'+'e0_F_L_film_st6'][init_ind]
+    simulator.z0['e0_F_L_film_st7'] = trajectory['Flowsheet.'+'e0_F_L_film_st7'][init_ind]
+    simulator.z0['e0_F_L_film_st8'] = trajectory['Flowsheet.'+'e0_F_L_film_st8'][init_ind]
+    simulator.z0['e0_H_st1'] = trajectory['Flowsheet.'+'e0_H_st1'][init_ind]
+    simulator.z0['e0_H_st2'] = trajectory['Flowsheet.'+'e0_H_st2'][init_ind]
+    simulator.z0['e0_H_st3'] = trajectory['Flowsheet.'+'e0_H_st3'][init_ind]
+    simulator.z0['e0_H_st4'] = trajectory['Flowsheet.'+'e0_H_st4'][init_ind]
+    simulator.z0['e0_H_st5'] = trajectory['Flowsheet.'+'e0_H_st5'][init_ind]
+    simulator.z0['e0_HU_V_st0'] = trajectory['Flowsheet.'+'e0_HU_V_st0'][init_ind]
+    simulator.z0['e0_H_st6'] = trajectory['Flowsheet.'+'e0_H_st6'][init_ind]
+    simulator.z0['e0_H_st7'] = trajectory['Flowsheet.'+'e0_H_st7'][init_ind]
+    simulator.z0['e0_H_st8'] = trajectory['Flowsheet.'+'e0_H_st8'][init_ind]
+    simulator.z0['e0_K_st0_i1'] = trajectory['Flowsheet.'+'e0_K_st0_i1'][init_ind]
+    simulator.z0['e0_K_st0_i2'] = trajectory['Flowsheet.'+'e0_K_st0_i2'][init_ind]
+    simulator.z0['e0_HU_L_st1'] = trajectory['Flowsheet.'+'e0_HU_L_st1'][init_ind]
+    simulator.z0['e0_HU_L_st2'] = trajectory['Flowsheet.'+'e0_HU_L_st2'][init_ind]
+    simulator.z0['e0_HU_L_st3'] = trajectory['Flowsheet.'+'e0_HU_L_st3'][init_ind]
+    simulator.z0['e0_HU_L_st4'] = trajectory['Flowsheet.'+'e0_HU_L_st4'][init_ind]
+    simulator.z0['e0_HU_L_st5'] = trajectory['Flowsheet.'+'e0_HU_L_st5'][init_ind]
+    simulator.z0['e0_HU_L_st6'] = trajectory['Flowsheet.'+'e0_HU_L_st6'][init_ind]
+    simulator.z0['e0_HU_L_st7'] = trajectory['Flowsheet.'+'e0_HU_L_st7'][init_ind]
+    simulator.z0['e0_HU_L_st8'] = trajectory['Flowsheet.'+'e0_HU_L_st8'][init_ind]
+    simulator.z0['e0_HU_V_st1'] = trajectory['Flowsheet.'+'e0_HU_V_st1'][init_ind]
+    simulator.z0['e0_HU_V_st2'] = trajectory['Flowsheet.'+'e0_HU_V_st2'][init_ind]
+    simulator.z0['e0_HU_V_st3'] = trajectory['Flowsheet.'+'e0_HU_V_st3'][init_ind]
+    simulator.z0['e0_HU_V_st4'] = trajectory['Flowsheet.'+'e0_HU_V_st4'][init_ind]
+    simulator.z0['e0_HU_V_st5'] = trajectory['Flowsheet.'+'e0_HU_V_st5'][init_ind]
+    simulator.z0['e0_HU_V_st6'] = trajectory['Flowsheet.'+'e0_HU_V_st6'][init_ind]
+    simulator.z0['e0_HU_V_st7'] = trajectory['Flowsheet.'+'e0_HU_V_st7'][init_ind]
+    simulator.z0['e0_HU_V_st8'] = trajectory['Flowsheet.'+'e0_HU_V_st8'][init_ind]
+    simulator.z0['e0_K_st1_i1'] = trajectory['Flowsheet.'+'e0_K_st1_i1'][init_ind]
+    simulator.z0['e0_K_st2_i1'] = trajectory['Flowsheet.'+'e0_K_st2_i1'][init_ind]
+    simulator.z0['e0_K_st3_i1'] = trajectory['Flowsheet.'+'e0_K_st3_i1'][init_ind]
+    simulator.z0['e0_K_st4_i1'] = trajectory['Flowsheet.'+'e0_K_st4_i1'][init_ind]
+    simulator.z0['e0_K_st5_i1'] = trajectory['Flowsheet.'+'e0_K_st5_i1'][init_ind]
+    simulator.z0['e0_K_st6_i1'] = trajectory['Flowsheet.'+'e0_K_st6_i1'][init_ind]
+    simulator.z0['e0_K_st7_i1'] = trajectory['Flowsheet.'+'e0_K_st7_i1'][init_ind]
+    simulator.z0['e0_M_L_st0'] = trajectory['Flowsheet.'+'e0_M_L_st0'][init_ind]
+    simulator.z0['e0_K_st8_i1'] = trajectory['Flowsheet.'+'e0_K_st8_i1'][init_ind]
+    simulator.z0['e0_K_st1_i2'] = trajectory['Flowsheet.'+'e0_K_st1_i2'][init_ind]
+    simulator.z0['e0_K_st2_i2'] = trajectory['Flowsheet.'+'e0_K_st2_i2'][init_ind]
+    simulator.z0['e0_K_st3_i2'] = trajectory['Flowsheet.'+'e0_K_st3_i2'][init_ind]
+    simulator.z0['e0_K_st4_i2'] = trajectory['Flowsheet.'+'e0_K_st4_i2'][init_ind]
+    simulator.z0['e0_K_st5_i2'] = trajectory['Flowsheet.'+'e0_K_st5_i2'][init_ind]
+    simulator.z0['e0_K_st6_i2'] = trajectory['Flowsheet.'+'e0_K_st6_i2'][init_ind]
+    simulator.z0['e0_K_st7_i2'] = trajectory['Flowsheet.'+'e0_K_st7_i2'][init_ind]
+    simulator.z0['e0_K_st8_i2'] = trajectory['Flowsheet.'+'e0_K_st8_i2'][init_ind]
+    simulator.z0['e0_P_st0'] = trajectory['Flowsheet.'+'e0_P_st0'][init_ind]
+    simulator.z0['e0_M_L_st1'] = trajectory['Flowsheet.'+'e0_M_L_st1'][init_ind]
+    simulator.z0['e0_M_L_st2'] = trajectory['Flowsheet.'+'e0_M_L_st2'][init_ind]
+    simulator.z0['e0_M_L_st3'] = trajectory['Flowsheet.'+'e0_M_L_st3'][init_ind]
+    simulator.z0['e0_M_L_st4'] = trajectory['Flowsheet.'+'e0_M_L_st4'][init_ind]
+    simulator.z0['e0_M_L_st5'] = trajectory['Flowsheet.'+'e0_M_L_st5'][init_ind]
+    simulator.z0['e0_M_L_st6'] = trajectory['Flowsheet.'+'e0_M_L_st6'][init_ind]
+    simulator.z0['e0_M_L_st7'] = trajectory['Flowsheet.'+'e0_M_L_st7'][init_ind]
+    simulator.z0['e0_M_L_st8'] = trajectory['Flowsheet.'+'e0_M_L_st8'][init_ind]
+    simulator.z0['e0_P_st1'] = trajectory['Flowsheet.'+'e0_P_st1'][init_ind]
+    simulator.z0['e0_P_st2'] = trajectory['Flowsheet.'+'e0_P_st2'][init_ind]
+    simulator.z0['e0_P_st3'] = trajectory['Flowsheet.'+'e0_P_st3'][init_ind]
+    simulator.z0['e0_P_st4'] = trajectory['Flowsheet.'+'e0_P_st4'][init_ind]
+    simulator.z0['e0_P_st5'] = trajectory['Flowsheet.'+'e0_P_st5'][init_ind]
+    simulator.z0['e0_P_st6'] = trajectory['Flowsheet.'+'e0_P_st6'][init_ind]
+    simulator.z0['e0_P_st7'] = trajectory['Flowsheet.'+'e0_P_st7'][init_ind]
+    simulator.z0['e0_P_st8'] = trajectory['Flowsheet.'+'e0_P_st8'][init_ind]
+    simulator.z0['e0_T_st1'] = trajectory['Flowsheet.'+'e0_T_st1'][init_ind]
+    simulator.z0['e0_T_st2'] = trajectory['Flowsheet.'+'e0_T_st2'][init_ind]
+    simulator.z0['e0_T_st3'] = trajectory['Flowsheet.'+'e0_T_st3'][init_ind]
+    simulator.z0['e0_T_st4'] = trajectory['Flowsheet.'+'e0_T_st4'][init_ind]
+    simulator.z0['e0_T_st5'] = trajectory['Flowsheet.'+'e0_T_st5'][init_ind]
+    simulator.z0['e0_T_st0'] = trajectory['Flowsheet.'+'e0_T_st0'][init_ind]
+    simulator.z0['e0_T_st6'] = trajectory['Flowsheet.'+'e0_T_st6'][init_ind]
+    simulator.z0['e0_T_st7'] = trajectory['Flowsheet.'+'e0_T_st7'][init_ind]
+    simulator.z0['e0_T_st8'] = trajectory['Flowsheet.'+'e0_T_st8'][init_ind]
+    simulator.z0['e0_V_L_st1'] = trajectory['Flowsheet.'+'e0_V_L_st1'][init_ind]
+    simulator.z0['e0_V_L_st2'] = trajectory['Flowsheet.'+'e0_V_L_st2'][init_ind]
+    simulator.z0['e0_V_L_st3'] = trajectory['Flowsheet.'+'e0_V_L_st3'][init_ind]
+    simulator.z0['e0_V_L_st4'] = trajectory['Flowsheet.'+'e0_V_L_st4'][init_ind]
+    simulator.z0['e0_V_L_st5'] = trajectory['Flowsheet.'+'e0_V_L_st5'][init_ind]
+    simulator.z0['e0_V_L_st6'] = trajectory['Flowsheet.'+'e0_V_L_st6'][init_ind]
+    simulator.z0['e0_V_L_st7'] = trajectory['Flowsheet.'+'e0_V_L_st7'][init_ind]
+    simulator.z0['e0_V_L_st8'] = trajectory['Flowsheet.'+'e0_V_L_st8'][init_ind]
+    simulator.z0['e0_V_V_st1'] = trajectory['Flowsheet.'+'e0_V_V_st1'][init_ind]
+    simulator.z0['e0_V_L_st0'] = trajectory['Flowsheet.'+'e0_V_L_st0'][init_ind]
+    simulator.z0['e0_V_V_st2'] = trajectory['Flowsheet.'+'e0_V_V_st2'][init_ind]
+    simulator.z0['e0_V_V_st3'] = trajectory['Flowsheet.'+'e0_V_V_st3'][init_ind]
+    simulator.z0['e0_V_V_st4'] = trajectory['Flowsheet.'+'e0_V_V_st4'][init_ind]
+    simulator.z0['e0_V_V_st5'] = trajectory['Flowsheet.'+'e0_V_V_st5'][init_ind]
+    simulator.z0['e0_V_V_st6'] = trajectory['Flowsheet.'+'e0_V_V_st6'][init_ind]
+    simulator.z0['e0_V_V_st7'] = trajectory['Flowsheet.'+'e0_V_V_st7'][init_ind]
+    simulator.z0['e0_V_V_st8'] = trajectory['Flowsheet.'+'e0_V_V_st8'][init_ind]
+    simulator.z0['e0_V_V_st0'] = trajectory['Flowsheet.'+'e0_V_V_st0'][init_ind]
+    simulator.z0['e0_aux_L_st1'] = trajectory['Flowsheet.'+'e0_aux_L_st1'][init_ind]
+    simulator.z0['e0_aux_L_st2'] = trajectory['Flowsheet.'+'e0_aux_L_st2'][init_ind]
+    simulator.z0['e0_aux_L_st3'] = trajectory['Flowsheet.'+'e0_aux_L_st3'][init_ind]
+    simulator.z0['e0_aux_L_st4'] = trajectory['Flowsheet.'+'e0_aux_L_st4'][init_ind]
+    simulator.z0['e0_aux_L_st5'] = trajectory['Flowsheet.'+'e0_aux_L_st5'][init_ind]
+    simulator.z0['e0_aux_L_st6'] = trajectory['Flowsheet.'+'e0_aux_L_st6'][init_ind]
+    simulator.z0['e0_aux_L_st7'] = trajectory['Flowsheet.'+'e0_aux_L_st7'][init_ind]
+    simulator.z0['e0_aux_L_st8'] = trajectory['Flowsheet.'+'e0_aux_L_st8'][init_ind]
+    simulator.z0['e0_aux_V_c_st1'] = trajectory['Flowsheet.'+'e0_aux_V_c_st1'][init_ind]
+    simulator.z0['e0_aux_V_c_st2'] = trajectory['Flowsheet.'+'e0_aux_V_c_st2'][init_ind]
+    simulator.z0['e0_aux_V_c_st3'] = trajectory['Flowsheet.'+'e0_aux_V_c_st3'][init_ind]
+    simulator.z0['e0_aux_V_c_st4'] = trajectory['Flowsheet.'+'e0_aux_V_c_st4'][init_ind]
+    simulator.z0['e0_aux_V_c_st5'] = trajectory['Flowsheet.'+'e0_aux_V_c_st5'][init_ind]
+    simulator.z0['e0_aux_V_c_st6'] = trajectory['Flowsheet.'+'e0_aux_V_c_st6'][init_ind]
+    simulator.z0['e0_aux_V_c_st7'] = trajectory['Flowsheet.'+'e0_aux_V_c_st7'][init_ind]
+    simulator.z0['e0_aux_V_c_st8'] = trajectory['Flowsheet.'+'e0_aux_V_c_st8'][init_ind]
+    simulator.z0['e0_aux_mid_max_st1'] = trajectory['Flowsheet.'+'e0_aux_mid_max_st1'][init_ind]
+    simulator.z0['e0_aux_mid_max_st2'] = trajectory['Flowsheet.'+'e0_aux_mid_max_st2'][init_ind]
+    simulator.z0['e0_aux_mid_max_st3'] = trajectory['Flowsheet.'+'e0_aux_mid_max_st3'][init_ind]
+    simulator.z0['e0_aux_mid_max_st4'] = trajectory['Flowsheet.'+'e0_aux_mid_max_st4'][init_ind]
+    simulator.z0['e0_aux_mid_max_st5'] = trajectory['Flowsheet.'+'e0_aux_mid_max_st5'][init_ind]
+    simulator.z0['e0_aux_mid_max_st6'] = trajectory['Flowsheet.'+'e0_aux_mid_max_st6'][init_ind]
+    simulator.z0['e0_aux_mid_max_st7'] = trajectory['Flowsheet.'+'e0_aux_mid_max_st7'][init_ind]
+    simulator.z0['e0_aux_mid_max_st8'] = trajectory['Flowsheet.'+'e0_aux_mid_max_st8'][init_ind]
+    simulator.z0['e0_aux_mid_min_st1'] = trajectory['Flowsheet.'+'e0_aux_mid_min_st1'][init_ind]
+    simulator.z0['e0_aux_mid_min_st2'] = trajectory['Flowsheet.'+'e0_aux_mid_min_st2'][init_ind]
+    simulator.z0['e0_aux_mid_min_st3'] = trajectory['Flowsheet.'+'e0_aux_mid_min_st3'][init_ind]
+    simulator.z0['e0_aux_mid_min_st4'] = trajectory['Flowsheet.'+'e0_aux_mid_min_st4'][init_ind]
+    simulator.z0['e0_aux_mid_min_st5'] = trajectory['Flowsheet.'+'e0_aux_mid_min_st5'][init_ind]
+    simulator.z0['e0_aux_L_st0'] = trajectory['Flowsheet.'+'e0_aux_L_st0'][init_ind]
+    simulator.z0['e0_aux_mid_min_st6'] = trajectory['Flowsheet.'+'e0_aux_mid_min_st6'][init_ind]
+    simulator.z0['e0_aux_mid_min_st7'] = trajectory['Flowsheet.'+'e0_aux_mid_min_st7'][init_ind]
+    simulator.z0['e0_aux_mid_min_st8'] = trajectory['Flowsheet.'+'e0_aux_mid_min_st8'][init_ind]
+    simulator.z0['e0_aux_PC_st0'] = trajectory['Flowsheet.'+'e0_aux_PC_st0'][init_ind]
+    simulator.z0['e0_g_V_b_st1'] = trajectory['Flowsheet.'+'e0_g_V_b_st1'][init_ind]
+    simulator.z0['e0_g_V_b_st2'] = trajectory['Flowsheet.'+'e0_g_V_b_st2'][init_ind]
+    simulator.z0['e0_g_V_b_st3'] = trajectory['Flowsheet.'+'e0_g_V_b_st3'][init_ind]
+    simulator.z0['e0_g_V_b_st4'] = trajectory['Flowsheet.'+'e0_g_V_b_st4'][init_ind]
+    simulator.z0['e0_g_V_b_st5'] = trajectory['Flowsheet.'+'e0_g_V_b_st5'][init_ind]
+    simulator.z0['e0_g_V_b_st6'] = trajectory['Flowsheet.'+'e0_g_V_b_st6'][init_ind]
+    simulator.z0['e0_g_V_b_st7'] = trajectory['Flowsheet.'+'e0_g_V_b_st7'][init_ind]
+    simulator.z0['e0_g_V_b_st8'] = trajectory['Flowsheet.'+'e0_g_V_b_st8'][init_ind]
+    simulator.z0['e0_g_V_c_st1'] = trajectory['Flowsheet.'+'e0_g_V_c_st1'][init_ind]
+    simulator.z0['e0_aux_V_c_st0'] = trajectory['Flowsheet.'+'e0_aux_V_c_st0'][init_ind]
+    simulator.z0['e0_g_V_c_st2'] = trajectory['Flowsheet.'+'e0_g_V_c_st2'][init_ind]
+    simulator.z0['e0_g_V_c_st3'] = trajectory['Flowsheet.'+'e0_g_V_c_st3'][init_ind]
+    simulator.z0['e0_g_V_c_st4'] = trajectory['Flowsheet.'+'e0_g_V_c_st4'][init_ind]
+    simulator.z0['e0_g_V_c_st5'] = trajectory['Flowsheet.'+'e0_g_V_c_st5'][init_ind]
+    simulator.z0['e0_g_V_c_st6'] = trajectory['Flowsheet.'+'e0_g_V_c_st6'][init_ind]
+    simulator.z0['e0_g_V_c_st7'] = trajectory['Flowsheet.'+'e0_g_V_c_st7'][init_ind]
+    simulator.z0['e0_g_V_c_st8'] = trajectory['Flowsheet.'+'e0_g_V_c_st8'][init_ind]
+    simulator.z0['e0_aux_mid_max_st0'] = trajectory['Flowsheet.'+'e0_aux_mid_max_st0'][init_ind]
+    simulator.z0['e0_aux_mid_min_st0'] = trajectory['Flowsheet.'+'e0_aux_mid_min_st0'][init_ind]
+    simulator.z0['e0_h_L_st1'] = trajectory['Flowsheet.'+'e0_h_L_st1'][init_ind]
+    simulator.z0['e0_h_L_st2'] = trajectory['Flowsheet.'+'e0_h_L_st2'][init_ind]
+    simulator.z0['e0_h_L_st3'] = trajectory['Flowsheet.'+'e0_h_L_st3'][init_ind]
+    simulator.z0['e0_h_L_st4'] = trajectory['Flowsheet.'+'e0_h_L_st4'][init_ind]
+    simulator.z0['e0_h_L_st5'] = trajectory['Flowsheet.'+'e0_h_L_st5'][init_ind]
+    simulator.z0['e0_h_L_st6'] = trajectory['Flowsheet.'+'e0_h_L_st6'][init_ind]
+    simulator.z0['e0_h_L_st7'] = trajectory['Flowsheet.'+'e0_h_L_st7'][init_ind]
+    simulator.z0['e0_h_L_st8'] = trajectory['Flowsheet.'+'e0_h_L_st8'][init_ind]
+    simulator.z0['e0_g_V_b_st0'] = trajectory['Flowsheet.'+'e0_g_V_b_st0'][init_ind]
+    simulator.z0['e0_g_V_c_st0'] = trajectory['Flowsheet.'+'e0_g_V_c_st0'][init_ind]
+    simulator.z0['e0_h_V_st2'] = trajectory['Flowsheet.'+'e0_h_V_st2'][init_ind]
+    simulator.z0['e0_h_V_st3'] = trajectory['Flowsheet.'+'e0_h_V_st3'][init_ind]
+    simulator.z0['e0_h_V_st4'] = trajectory['Flowsheet.'+'e0_h_V_st4'][init_ind]
+    simulator.z0['e0_h_V_st5'] = trajectory['Flowsheet.'+'e0_h_V_st5'][init_ind]
+    simulator.z0['e0_h_V_st6'] = trajectory['Flowsheet.'+'e0_h_V_st6'][init_ind]
+    simulator.z0['e0_h_V_st7'] = trajectory['Flowsheet.'+'e0_h_V_st7'][init_ind]
+    simulator.z0['e0_h_V_st8'] = trajectory['Flowsheet.'+'e0_h_V_st8'][init_ind]
+    simulator.z0['e0_h_V_st9'] = trajectory['Flowsheet.'+'e0_h_V_st9'][init_ind]
+    simulator.z0['e0_res_st1'] = trajectory['Flowsheet.'+'e0_res_st1'][init_ind]
+    simulator.z0['e0_res_st2'] = trajectory['Flowsheet.'+'e0_res_st2'][init_ind]
+    simulator.z0['e0_res_st3'] = trajectory['Flowsheet.'+'e0_res_st3'][init_ind]
+    simulator.z0['e0_res_st4'] = trajectory['Flowsheet.'+'e0_res_st4'][init_ind]
+    simulator.z0['e0_res_st5'] = trajectory['Flowsheet.'+'e0_res_st5'][init_ind]
+    simulator.z0['e0_res_st6'] = trajectory['Flowsheet.'+'e0_res_st6'][init_ind]
+    simulator.z0['e0_res_st7'] = trajectory['Flowsheet.'+'e0_res_st7'][init_ind]
+    simulator.z0['e0_res_st8'] = trajectory['Flowsheet.'+'e0_res_st8'][init_ind]
+    simulator.z0['e0_x_st1_i1'] = trajectory['Flowsheet.'+'e0_x_st1_i1'][init_ind]
+    simulator.z0['e0_x_st2_i1'] = trajectory['Flowsheet.'+'e0_x_st2_i1'][init_ind]
+    simulator.z0['e0_x_st3_i1'] = trajectory['Flowsheet.'+'e0_x_st3_i1'][init_ind]
+    simulator.z0['e0_x_st4_i1'] = trajectory['Flowsheet.'+'e0_x_st4_i1'][init_ind]
+    simulator.z0['e0_x_st5_i1'] = trajectory['Flowsheet.'+'e0_x_st5_i1'][init_ind]
+    simulator.z0['e0_x_st6_i1'] = trajectory['Flowsheet.'+'e0_x_st6_i1'][init_ind]
+    simulator.z0['e0_x_st7_i1'] = trajectory['Flowsheet.'+'e0_x_st7_i1'][init_ind]
+    simulator.z0['e0_x_st8_i1'] = trajectory['Flowsheet.'+'e0_x_st8_i1'][init_ind]
+    simulator.z0['e0_x_st1_i2'] = trajectory['Flowsheet.'+'e0_x_st1_i2'][init_ind]
+    simulator.z0['e0_x_st2_i2'] = trajectory['Flowsheet.'+'e0_x_st2_i2'][init_ind]
+    simulator.z0['e0_x_st3_i2'] = trajectory['Flowsheet.'+'e0_x_st3_i2'][init_ind]
+    simulator.z0['e0_h_L_st0'] = trajectory['Flowsheet.'+'e0_h_L_st0'][init_ind]
+    simulator.z0['e0_x_st4_i2'] = trajectory['Flowsheet.'+'e0_x_st4_i2'][init_ind]
+    simulator.z0['e0_x_st5_i2'] = trajectory['Flowsheet.'+'e0_x_st5_i2'][init_ind]
+    simulator.z0['e0_x_st6_i2'] = trajectory['Flowsheet.'+'e0_x_st6_i2'][init_ind]
+    simulator.z0['e0_x_st7_i2'] = trajectory['Flowsheet.'+'e0_x_st7_i2'][init_ind]
+    simulator.z0['e0_x_st8_i2'] = trajectory['Flowsheet.'+'e0_x_st8_i2'][init_ind]
+    simulator.z0['e0_x_st1_i3'] = trajectory['Flowsheet.'+'e0_x_st1_i3'][init_ind]
+    simulator.z0['e0_x_st2_i3'] = trajectory['Flowsheet.'+'e0_x_st2_i3'][init_ind]
+    simulator.z0['e0_x_st3_i3'] = trajectory['Flowsheet.'+'e0_x_st3_i3'][init_ind]
+    simulator.z0['e0_x_st4_i3'] = trajectory['Flowsheet.'+'e0_x_st4_i3'][init_ind]
+    simulator.z0['e0_x_st5_i3'] = trajectory['Flowsheet.'+'e0_x_st5_i3'][init_ind]
+    simulator.z0['e0_x_st6_i3'] = trajectory['Flowsheet.'+'e0_x_st6_i3'][init_ind]
+    simulator.z0['e0_x_st7_i3'] = trajectory['Flowsheet.'+'e0_x_st7_i3'][init_ind]
+    simulator.z0['e0_x_st8_i3'] = trajectory['Flowsheet.'+'e0_x_st8_i3'][init_ind]
+    simulator.z0['e0_y_st2_i1'] = trajectory['Flowsheet.'+'e0_y_st2_i1'][init_ind]
+    simulator.z0['e0_y_st3_i1'] = trajectory['Flowsheet.'+'e0_y_st3_i1'][init_ind]
+    simulator.z0['e0_y_st4_i1'] = trajectory['Flowsheet.'+'e0_y_st4_i1'][init_ind]
+    simulator.z0['e0_y_st5_i1'] = trajectory['Flowsheet.'+'e0_y_st5_i1'][init_ind]
+    simulator.z0['e0_y_st6_i1'] = trajectory['Flowsheet.'+'e0_y_st6_i1'][init_ind]
+    simulator.z0['e0_y_st7_i1'] = trajectory['Flowsheet.'+'e0_y_st7_i1'][init_ind]
+    simulator.z0['e0_y_st8_i1'] = trajectory['Flowsheet.'+'e0_y_st8_i1'][init_ind]
+    simulator.z0['e0_y_st9_i1'] = trajectory['Flowsheet.'+'e0_y_st9_i1'][init_ind]
+    simulator.z0['e0_y_st2_i2'] = trajectory['Flowsheet.'+'e0_y_st2_i2'][init_ind]
+    simulator.z0['e0_y_st3_i2'] = trajectory['Flowsheet.'+'e0_y_st3_i2'][init_ind]
+    simulator.z0['e0_y_st4_i2'] = trajectory['Flowsheet.'+'e0_y_st4_i2'][init_ind]
+    simulator.z0['e0_y_st5_i2'] = trajectory['Flowsheet.'+'e0_y_st5_i2'][init_ind]
+    simulator.z0['e0_y_st6_i2'] = trajectory['Flowsheet.'+'e0_y_st6_i2'][init_ind]
+    simulator.z0['e0_y_st7_i2'] = trajectory['Flowsheet.'+'e0_y_st7_i2'][init_ind]
+    simulator.z0['e0_y_st8_i2'] = trajectory['Flowsheet.'+'e0_y_st8_i2'][init_ind]
+    simulator.z0['e0_y_st9_i2'] = trajectory['Flowsheet.'+'e0_y_st9_i2'][init_ind]
+    simulator.z0['e0_y_st2_i3'] = trajectory['Flowsheet.'+'e0_y_st2_i3'][init_ind]
+    simulator.z0['e0_y_st3_i3'] = trajectory['Flowsheet.'+'e0_y_st3_i3'][init_ind]
+    simulator.z0['e0_y_st4_i3'] = trajectory['Flowsheet.'+'e0_y_st4_i3'][init_ind]
+    simulator.z0['e0_y_st5_i3'] = trajectory['Flowsheet.'+'e0_y_st5_i3'][init_ind]
+    simulator.z0['e0_y_st6_i3'] = trajectory['Flowsheet.'+'e0_y_st6_i3'][init_ind]
+    simulator.z0['e0_y_st7_i3'] = trajectory['Flowsheet.'+'e0_y_st7_i3'][init_ind]
+    simulator.z0['e0_y_st8_i3'] = trajectory['Flowsheet.'+'e0_y_st8_i3'][init_ind]
+    simulator.z0['e0_y_st9_i3'] = trajectory['Flowsheet.'+'e0_y_st9_i3'][init_ind]
+    simulator.z0['e0_greek_DeltaP_st8'] = trajectory['Flowsheet.'+'e0_greek_DeltaP_st8'][init_ind]
+    simulator.z0['e0_greek_chi_st9'] = trajectory['Flowsheet.'+'e0_greek_chi_st9'][init_ind]
+    simulator.z0['e0_h_V_st0'] = trajectory['Flowsheet.'+'e0_h_V_st0'][init_ind]
+    simulator.z0['e0_greek_chi_inv_st9'] = trajectory['Flowsheet.'+'e0_greek_chi_inv_st9'][init_ind]
+    simulator.z0['e0_greek_rho_L_st9'] = trajectory['Flowsheet.'+'e0_greek_rho_L_st9'][init_ind]
+    simulator.z0['e0_greek_rho_Lmass_st9'] = trajectory['Flowsheet.'+'e0_greek_rho_Lmass_st9'][init_ind]
+    simulator.z0['e0_greek_sigma_Ldirac_st9'] = trajectory['Flowsheet.'+'e0_greek_sigma_Ldirac_st9'][init_ind]
+    simulator.z0['e0_greek_zeta_st9'] = trajectory['Flowsheet.'+'e0_greek_zeta_st9'][init_ind]
+    simulator.z0['e0_h_V_st1'] = trajectory['Flowsheet.'+'e0_h_V_st1'][init_ind]
+    simulator.z0['e0_F_N2_st9'] = trajectory['Flowsheet.'+'e0_F_N2_st9'][init_ind]
+    simulator.z0['e0_F_SV_st9'] = trajectory['Flowsheet.'+'e0_F_SV_st9'][init_ind]
+    simulator.z0['e0_H_st9'] = trajectory['Flowsheet.'+'e0_H_st9'][init_ind]
+    simulator.z0['e0_HU_L_st9'] = trajectory['Flowsheet.'+'e0_HU_L_st9'][init_ind]
+    simulator.z0['e0_HU_V_st9'] = trajectory['Flowsheet.'+'e0_HU_V_st9'][init_ind]
+    simulator.z0['e0_res_st0'] = trajectory['Flowsheet.'+'e0_res_st0'][init_ind]
+    simulator.z0['e0_K_st9_i1'] = trajectory['Flowsheet.'+'e0_K_st9_i1'][init_ind]
+    simulator.z0['e0_K_st9_i2'] = trajectory['Flowsheet.'+'e0_K_st9_i2'][init_ind]
+    simulator.z0['e0_M_L_st9'] = trajectory['Flowsheet.'+'e0_M_L_st9'][init_ind]
+    simulator.z0['e0_P_st9'] = trajectory['Flowsheet.'+'e0_P_st9'][init_ind]
+    simulator.z0['e0_T_st9'] = trajectory['Flowsheet.'+'e0_T_st9'][init_ind]
+    simulator.z0['e0_V_L_st9'] = trajectory['Flowsheet.'+'e0_V_L_st9'][init_ind]
+    simulator.z0['e0_V_V_st9'] = trajectory['Flowsheet.'+'e0_V_V_st9'][init_ind]
+    simulator.z0['e0_aux_N2_c_st9'] = trajectory['Flowsheet.'+'e0_aux_N2_c_st9'][init_ind]
+    simulator.z0['e0_aux_SV_c_st9'] = trajectory['Flowsheet.'+'e0_aux_SV_c_st9'][init_ind]
+    simulator.z0['e0_x_st0_i1'] = trajectory['Flowsheet.'+'e0_x_st0_i1'][init_ind]
+    simulator.z0['e0_aux_V_c_st9'] = trajectory['Flowsheet.'+'e0_aux_V_c_st9'][init_ind]
+    simulator.z0['e0_aux_mid_max_st9'] = trajectory['Flowsheet.'+'e0_aux_mid_max_st9'][init_ind]
+    simulator.z0['e0_aux_mid_min_st9'] = trajectory['Flowsheet.'+'e0_aux_mid_min_st9'][init_ind]
+    simulator.z0['e0_g_SV_b_st9'] = trajectory['Flowsheet.'+'e0_g_SV_b_st9'][init_ind]
+    simulator.z0['e0_g_V_b_st9'] = trajectory['Flowsheet.'+'e0_g_V_b_st9'][init_ind]
+    simulator.z0['e0_g_N2_c_st9'] = trajectory['Flowsheet.'+'e0_g_N2_c_st9'][init_ind]
+    simulator.z0['e0_g_SV_c_st9'] = trajectory['Flowsheet.'+'e0_g_SV_c_st9'][init_ind]
+    simulator.z0['e0_x_st0_i2'] = trajectory['Flowsheet.'+'e0_x_st0_i2'][init_ind]
+    simulator.z0['e0_g_V_c_st9'] = trajectory['Flowsheet.'+'e0_g_V_c_st9'][init_ind]
+    simulator.z0['e0_h_F_st9'] = trajectory['Flowsheet.'+'e0_h_F_st9'][init_ind]
+    simulator.z0['e0_h_L_st9'] = trajectory['Flowsheet.'+'e0_h_L_st9'][init_ind]
+    simulator.z0['e0_x_st0_i3'] = trajectory['Flowsheet.'+'e0_x_st0_i3'][init_ind]
+    simulator.z0['e0_h_N2_st9'] = trajectory['Flowsheet.'+'e0_h_N2_st9'][init_ind]
+    simulator.z0['e0_res_st9'] = trajectory['Flowsheet.'+'e0_res_st9'][init_ind]
+    simulator.z0['e0_y_st0_i1'] = trajectory['Flowsheet.'+'e0_y_st0_i1'][init_ind]
+    simulator.z0['e0_x_st9_i1'] = trajectory['Flowsheet.'+'e0_x_st9_i1'][init_ind]
+    simulator.z0['e0_x_st9_i2'] = trajectory['Flowsheet.'+'e0_x_st9_i2'][init_ind]
+    simulator.z0['e0_x_st9_i3'] = trajectory['Flowsheet.'+'e0_x_st9_i3'][init_ind]
+    simulator.z0['e0_y_st1_i1'] = trajectory['Flowsheet.'+'e0_y_st1_i1'][init_ind]
+    simulator.z0['e0_y_st0_i2'] = trajectory['Flowsheet.'+'e0_y_st0_i2'][init_ind]
+    simulator.z0['e0_y_st1_i2'] = trajectory['Flowsheet.'+'e0_y_st1_i2'][init_ind]
+    simulator.z0['e0_y_st0_i3'] = trajectory['Flowsheet.'+'e0_y_st0_i3'][init_ind]
+    simulator.z0['e0_y_st1_i3'] = trajectory['Flowsheet.'+'e0_y_st1_i3'][init_ind]
+    simulator.z0['e0_greek_rho_L_st0'] = trajectory['Flowsheet.'+'e0_greek_rho_L_st0'][init_ind]
 
-    simulator.u0["e0_greek_sigma_R"] = 1.0
-    simulator.u0["e0_greek_eta_L_st1"] = 0.0019
-    simulator.u0["e0_greek_eta_L_st2"] = 0.0019
-    simulator.u0["e0_greek_eta_L_st3"] = 0.0019
-    simulator.u0["e0_greek_eta_L_st4"] = 0.0019
-    simulator.u0["e0_greek_eta_L_st5"] = 0.0019
-    simulator.u0["e0_greek_eta_L_st6"] = 0.0019
-    simulator.u0["e0_greek_eta_L_st7"] = 0.0019
-    simulator.u0["e0_greek_eta_L_st8"] = 0.0019
-    simulator.u0["e0_greek_gamma_st1_i1"] = 1.0
-    simulator.u0["e0_greek_gamma_st2_i1"] = 1.0
-    simulator.u0["e0_greek_gamma_st3_i1"] = 1.0
-    simulator.u0["e0_greek_gamma_st4_i1"] = 1.0
-    simulator.u0["e0_greek_gamma_st5_i1"] = 1.0
-    simulator.u0["e0_greek_gamma_st6_i1"] = 1.0
-    simulator.u0["e0_greek_gamma_st7_i1"] = 1.0
-    simulator.u0["e0_greek_gamma_st8_i1"] = 1.0
-    simulator.u0["e0_greek_gamma_st1_i2"] = 1.0
-    simulator.u0["e0_greek_gamma_st2_i2"] = 1.0
-    simulator.u0["e0_greek_gamma_st3_i2"] = 1.0
-    simulator.u0["e0_greek_gamma_st4_i2"] = 1.0
-    simulator.u0["e0_greek_gamma_st5_i2"] = 1.0
-    simulator.u0["e0_greek_gamma_st6_i2"] = 1.0
-    simulator.u0["e0_greek_gamma_st7_i2"] = 1.0
-    simulator.u0["e0_greek_gamma_st8_i2"] = 1.0
-    simulator.u0["e0_greek_rho_st1_i1"] = 17136.3
-    simulator.u0["e0_greek_rho_st2_i1"] = 17136.3
-    simulator.u0["e0_greek_rho_st3_i1"] = 17136.3
-    simulator.u0["e0_greek_rho_st4_i1"] = 17136.3
-    simulator.u0["e0_greek_rho_st5_i1"] = 17136.3
-    simulator.u0["e0_greek_rho_st6_i1"] = 17136.3
-    simulator.u0["e0_greek_rho_st7_i1"] = 17136.3
-    simulator.u0["e0_greek_rho_st8_i1"] = 17136.3
-    simulator.u0["e0_greek_rho_st1_i2"] = 55555.6
-    simulator.u0["e0_greek_rho_st2_i2"] = 55555.6
-    simulator.u0["e0_greek_rho_st3_i2"] = 55555.6
-    simulator.u0["e0_greek_rho_st4_i2"] = 55555.6
-    simulator.u0["e0_greek_rho_st5_i2"] = 55555.6
-    simulator.u0["e0_greek_rho_st6_i2"] = 55555.6
-    simulator.u0["e0_greek_rho_st7_i2"] = 55555.6
-    simulator.u0["e0_greek_rho_st8_i2"] = 55555.6
-    simulator.u0["e0_greek_rho_st1_i3"] = 36345.95
-    simulator.u0["e0_greek_rho_st2_i3"] = 36345.95
-    simulator.u0["e0_greek_rho_st3_i3"] = 36345.95
-    simulator.u0["e0_greek_rho_st4_i3"] = 36345.95
-    simulator.u0["e0_greek_rho_st5_i3"] = 36345.95
-    simulator.u0["e0_greek_rho_st6_i3"] = 36345.95
-    simulator.u0["e0_greek_rho_st7_i3"] = 36345.95
-    simulator.u0["e0_greek_rho_st8_i3"] = 36345.95
-    simulator.u0["e0_greek_eta_L_st0"] = 0.0019
-    simulator.u0["e0_K_st0_i3"] = 50000.0
-    simulator.u0["e0_L_film_st0"] = 0.314159
-    simulator.u0["e0_K_st1_i3"] = 50000.0
-    simulator.u0["e0_K_st2_i3"] = 50000.0
-    simulator.u0["e0_K_st3_i3"] = 50000.0
-    simulator.u0["e0_K_st4_i3"] = 50000.0
-    simulator.u0["e0_K_st5_i3"] = 50000.0
-    simulator.u0["e0_K_st6_i3"] = 50000.0
-    simulator.u0["e0_K_st7_i3"] = 50000.0
-    simulator.u0["e0_K_st8_i3"] = 50000.0
-    simulator.u0["e0_L_film_st1"] = 0.25
-    simulator.u0["e0_L_film_st2"] = 0.25
-    simulator.u0["e0_L_film_st3"] = 0.25
-    simulator.u0["e0_L_film_st4"] = 0.25
-    simulator.u0["e0_L_film_st5"] = 0.25
-    simulator.u0["e0_L_film_st6"] = 0.25
-    simulator.u0["e0_L_film_st7"] = 0.25
-    simulator.u0["e0_L_film_st8"] = 0.25
-    simulator.u0["e0_P_SP"] = 1.05
-    simulator.u0["e0_P_amb"] = 1.0
-    simulator.u0["e0_Q_st1"] = -8.712161E-18
-    simulator.u0["e0_Q_st2"] = -8.712161E-18
-    simulator.u0["e0_Q_st3"] = -8.712161E-18
-    simulator.u0["e0_Q_st0"] = 1.0449005E-17
-    simulator.u0["e0_Q_st4"] = -8.712161E-18
-    simulator.u0["e0_Q_st5"] = -8.712161E-18
-    simulator.u0["e0_Q_st6"] = -8.712161E-18
-    simulator.u0["e0_Q_st7"] = -8.712161E-18
-    simulator.u0["e0_Q_st8"] = -8.712161E-18
-    simulator.u0["e0_greek_gamma_st0_i1"] = 1.0
-    simulator.u0["e0_V_tot_st1"] = 3.92699E-4
-    simulator.u0["e0_V_tot_st2"] = 3.92699E-4
-    simulator.u0["e0_V_tot_st3"] = 3.92699E-4
-    simulator.u0["e0_V_tot_st4"] = 3.92699E-4
-    simulator.u0["e0_V_tot_st5"] = 3.92699E-4
-    simulator.u0["e0_V_tot_st6"] = 3.92699E-4
-    simulator.u0["e0_V_tot_st7"] = 3.92699E-4
-    simulator.u0["e0_V_tot_st8"] = 3.92699E-4
-    simulator.u0["e0_V_Lspec_correlation_st1"] = 0.00777
-    simulator.u0["e0_V_Lspec_correlation_st2"] = 0.00777
-    simulator.u0["e0_V_Lspec_correlation_st3"] = 0.00777
-    simulator.u0["e0_V_Lspec_correlation_st4"] = 0.00777
-    simulator.u0["e0_V_Lspec_correlation_st5"] = 0.00777
-    simulator.u0["e0_V_tot_st0"] = 0.00314159
-    simulator.u0["e0_V_Lspec_correlation_st6"] = 0.00777
-    simulator.u0["e0_V_Lspec_correlation_st7"] = 0.00777
-    simulator.u0["e0_V_Lspec_correlation_st8"] = 0.00777
-    simulator.u0["e0_V_V_min_st1"] = 1.0E-5
-    simulator.u0["e0_V_V_min_st2"] = 1.0E-5
-    simulator.u0["e0_V_V_min_st3"] = 1.0E-5
-    simulator.u0["e0_V_V_min_st4"] = 1.0E-5
-    simulator.u0["e0_V_V_min_st5"] = 1.0E-5
-    simulator.u0["e0_V_V_min_st6"] = 1.0E-5
-    simulator.u0["e0_V_V_min_st7"] = 1.0E-5
-    simulator.u0["e0_V_Lspec_correlation_st0"] = 1.25E-4
-    simulator.u0["e0_V_V_min_st8"] = 1.0E-5
-    simulator.u0["e0_V_V_min_st0"] = 1.0E-5
-    simulator.u0["e0_a_Cond"] = 80.0
-    simulator.u0["e0_c_V_st1"] = 150000.0
-    simulator.u0["e0_c_V_st2"] = 150000.0
-    simulator.u0["e0_c_V_st3"] = 150000.0
-    simulator.u0["e0_c_V_st4"] = 150000.0
-    simulator.u0["e0_c_V_st5"] = 150000.0
-    simulator.u0["e0_c_V_st6"] = 150000.0
-    simulator.u0["e0_c_V_st7"] = 150000.0
-    simulator.u0["e0_c_V_st8"] = 150000.0
-    simulator.u0["e0_greek_gamma_st0_i2"] = 1.0
-    simulator.u0["e0_c_V_st0"] = 150000.0
-    simulator.u0["e0_greek_rho_st0_i1"] = 17136.3
-    simulator.u0["e0_greek_gamma_st9_i1"] = 1.0
-    simulator.u0["e0_greek_gamma_st9_i2"] = 1.0
-    simulator.u0["e0_greek_rho_st9_i1"] = 17136.3
-    simulator.u0["e0_greek_rho_st9_i2"] = 55555.6
-    simulator.u0["e0_greek_rho_st9_i3"] = 36345.95
-    simulator.u0["e0_F_F_st9"] = 0.0
-    simulator.u0["e0_F_L_st9"] = 0.0
-    simulator.u0["e0_K_st9_i3"] = 50000.0
-    simulator.u0["e0_P_N2"] = 1.1
-    simulator.u0["e0_P_SV_st9"] = 1.3
-    simulator.u0["e0_Q_st9"] = 8.435772500000001E-17
-    simulator.u0["e0_T_F_st9"] = 300.0
-    simulator.u0["e0_T_N2_st9"] = 300.0
-    simulator.u0["e0_V_tot_st9"] = 0.0286
-    simulator.u0["e0_V_V_min_st9"] = 1.0E-5
-    simulator.u0["e0_c_N2_st9"] = 0.145
-    simulator.u0["e0_c_SV_st9"] = 1.5E7
-    simulator.u0["e0_c_V_st9"] = 1.5E7
-    simulator.u0["e0_greek_rho_st0_i2"] = 55555.6
-    simulator.u0["e0_x_F_st9_i1"] = 0.15
-    simulator.u0["e0_x_F_st9_i2"] = 0.85
-    simulator.u0["e0_x_F_st9_i3"] = 0.0
-    simulator.u0["e0_x_N2_st9_i1"] = 0.0
-    simulator.u0["e0_x_N2_st9_i2"] = 0.0
-    simulator.u0["e0_x_N2_st9_i3"] = 1.0
-    simulator.u0["e0_greek_rho_st0_i3"] = 36345.95
+
+    simulator.u0['e0_greek_sigma_R'] = trajectory['Flowsheet.e0_greek_sigma_R'][init_ind]
+    simulator.u0['e0_greek_eta_L_st1'] = trajectory['Flowsheet.e0_greek_eta_L_st1'][init_ind]
+    simulator.u0['e0_greek_eta_L_st2'] = trajectory['Flowsheet.e0_greek_eta_L_st2'][init_ind]
+    simulator.u0['e0_greek_eta_L_st3'] = trajectory['Flowsheet.e0_greek_eta_L_st3'][init_ind]
+    simulator.u0['e0_greek_eta_L_st4'] = trajectory['Flowsheet.e0_greek_eta_L_st4'][init_ind]
+    simulator.u0['e0_greek_eta_L_st5'] = trajectory['Flowsheet.e0_greek_eta_L_st5'][init_ind]
+    simulator.u0['e0_greek_eta_L_st6'] = trajectory['Flowsheet.e0_greek_eta_L_st6'][init_ind]
+    simulator.u0['e0_greek_eta_L_st7'] = trajectory['Flowsheet.e0_greek_eta_L_st7'][init_ind]
+    simulator.u0['e0_greek_eta_L_st8'] = trajectory['Flowsheet.e0_greek_eta_L_st8'][init_ind]
+    simulator.u0['e0_greek_gamma_st1_i1'] = trajectory['Flowsheet.e0_greek_gamma_st1_i1'][init_ind]
+    simulator.u0['e0_greek_gamma_st2_i1'] = trajectory['Flowsheet.e0_greek_gamma_st2_i1'][init_ind]
+    simulator.u0['e0_greek_gamma_st3_i1'] = trajectory['Flowsheet.e0_greek_gamma_st3_i1'][init_ind]
+    simulator.u0['e0_greek_gamma_st4_i1'] = trajectory['Flowsheet.e0_greek_gamma_st4_i1'][init_ind]
+    simulator.u0['e0_greek_gamma_st5_i1'] = trajectory['Flowsheet.e0_greek_gamma_st5_i1'][init_ind]
+    simulator.u0['e0_greek_gamma_st6_i1'] = trajectory['Flowsheet.e0_greek_gamma_st6_i1'][init_ind]
+    simulator.u0['e0_greek_gamma_st7_i1'] = trajectory['Flowsheet.e0_greek_gamma_st7_i1'][init_ind]
+    simulator.u0['e0_greek_gamma_st8_i1'] = trajectory['Flowsheet.e0_greek_gamma_st8_i1'][init_ind]
+    simulator.u0['e0_greek_gamma_st1_i2'] = trajectory['Flowsheet.e0_greek_gamma_st1_i2'][init_ind]
+    simulator.u0['e0_greek_gamma_st2_i2'] = trajectory['Flowsheet.e0_greek_gamma_st2_i2'][init_ind]
+    simulator.u0['e0_greek_gamma_st3_i2'] = trajectory['Flowsheet.e0_greek_gamma_st3_i2'][init_ind]
+    simulator.u0['e0_greek_gamma_st4_i2'] = trajectory['Flowsheet.e0_greek_gamma_st4_i2'][init_ind]
+    simulator.u0['e0_greek_gamma_st5_i2'] = trajectory['Flowsheet.e0_greek_gamma_st5_i2'][init_ind]
+    simulator.u0['e0_greek_gamma_st6_i2'] = trajectory['Flowsheet.e0_greek_gamma_st6_i2'][init_ind]
+    simulator.u0['e0_greek_gamma_st7_i2'] = trajectory['Flowsheet.e0_greek_gamma_st7_i2'][init_ind]
+    simulator.u0['e0_greek_gamma_st8_i2'] = trajectory['Flowsheet.e0_greek_gamma_st8_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st1_i1'] = trajectory['Flowsheet.e0_greek_rho_st1_i1'][init_ind]
+    simulator.u0['e0_greek_rho_st2_i1'] = trajectory['Flowsheet.e0_greek_rho_st2_i1'][init_ind]
+    simulator.u0['e0_greek_rho_st3_i1'] = trajectory['Flowsheet.e0_greek_rho_st3_i1'][init_ind]
+    simulator.u0['e0_greek_rho_st4_i1'] = trajectory['Flowsheet.e0_greek_rho_st4_i1'][init_ind]
+    simulator.u0['e0_greek_rho_st5_i1'] = trajectory['Flowsheet.e0_greek_rho_st5_i1'][init_ind]
+    simulator.u0['e0_greek_rho_st6_i1'] = trajectory['Flowsheet.e0_greek_rho_st6_i1'][init_ind]
+    simulator.u0['e0_greek_rho_st7_i1'] = trajectory['Flowsheet.e0_greek_rho_st7_i1'][init_ind]
+    simulator.u0['e0_greek_rho_st8_i1'] = trajectory['Flowsheet.e0_greek_rho_st8_i1'][init_ind]
+    simulator.u0['e0_greek_rho_st1_i2'] = trajectory['Flowsheet.e0_greek_rho_st1_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st2_i2'] = trajectory['Flowsheet.e0_greek_rho_st2_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st3_i2'] = trajectory['Flowsheet.e0_greek_rho_st3_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st4_i2'] = trajectory['Flowsheet.e0_greek_rho_st4_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st5_i2'] = trajectory['Flowsheet.e0_greek_rho_st5_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st6_i2'] = trajectory['Flowsheet.e0_greek_rho_st6_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st7_i2'] = trajectory['Flowsheet.e0_greek_rho_st7_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st8_i2'] = trajectory['Flowsheet.e0_greek_rho_st8_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st1_i3'] = trajectory['Flowsheet.e0_greek_rho_st1_i3'][init_ind]
+    simulator.u0['e0_greek_rho_st2_i3'] = trajectory['Flowsheet.e0_greek_rho_st2_i3'][init_ind]
+    simulator.u0['e0_greek_rho_st3_i3'] = trajectory['Flowsheet.e0_greek_rho_st3_i3'][init_ind]
+    simulator.u0['e0_greek_rho_st4_i3'] = trajectory['Flowsheet.e0_greek_rho_st4_i3'][init_ind]
+    simulator.u0['e0_greek_rho_st5_i3'] = trajectory['Flowsheet.e0_greek_rho_st5_i3'][init_ind]
+    simulator.u0['e0_greek_rho_st6_i3'] = trajectory['Flowsheet.e0_greek_rho_st6_i3'][init_ind]
+    simulator.u0['e0_greek_rho_st7_i3'] = trajectory['Flowsheet.e0_greek_rho_st7_i3'][init_ind]
+    simulator.u0['e0_greek_rho_st8_i3'] = trajectory['Flowsheet.e0_greek_rho_st8_i3'][init_ind]
+    simulator.u0['e0_greek_eta_L_st0'] = trajectory['Flowsheet.e0_greek_eta_L_st0'][init_ind]
+    simulator.u0['e0_K_st0_i3'] = trajectory['Flowsheet.e0_K_st0_i3'][init_ind]
+    simulator.u0['e0_L_film_st0'] = trajectory['Flowsheet.e0_L_film_st0'][init_ind]
+    simulator.u0['e0_K_st1_i3'] = trajectory['Flowsheet.e0_K_st1_i3'][init_ind]
+    simulator.u0['e0_K_st2_i3'] = trajectory['Flowsheet.e0_K_st2_i3'][init_ind]
+    simulator.u0['e0_K_st3_i3'] = trajectory['Flowsheet.e0_K_st3_i3'][init_ind]
+    simulator.u0['e0_K_st4_i3'] = trajectory['Flowsheet.e0_K_st4_i3'][init_ind]
+    simulator.u0['e0_K_st5_i3'] = trajectory['Flowsheet.e0_K_st5_i3'][init_ind]
+    simulator.u0['e0_K_st6_i3'] = trajectory['Flowsheet.e0_K_st6_i3'][init_ind]
+    simulator.u0['e0_K_st7_i3'] = trajectory['Flowsheet.e0_K_st7_i3'][init_ind]
+    simulator.u0['e0_K_st8_i3'] = trajectory['Flowsheet.e0_K_st8_i3'][init_ind]
+    simulator.u0['e0_L_film_st1'] = trajectory['Flowsheet.e0_L_film_st1'][init_ind]
+    simulator.u0['e0_L_film_st2'] = trajectory['Flowsheet.e0_L_film_st2'][init_ind]
+    simulator.u0['e0_L_film_st3'] = trajectory['Flowsheet.e0_L_film_st3'][init_ind]
+    simulator.u0['e0_L_film_st4'] = trajectory['Flowsheet.e0_L_film_st4'][init_ind]
+    simulator.u0['e0_L_film_st5'] = trajectory['Flowsheet.e0_L_film_st5'][init_ind]
+    simulator.u0['e0_L_film_st6'] = trajectory['Flowsheet.e0_L_film_st6'][init_ind]
+    simulator.u0['e0_L_film_st7'] = trajectory['Flowsheet.e0_L_film_st7'][init_ind]
+    simulator.u0['e0_L_film_st8'] = trajectory['Flowsheet.e0_L_film_st8'][init_ind]
+    simulator.u0['e0_P_SP'] = trajectory['Flowsheet.e0_P_SP'][init_ind]
+    simulator.u0['e0_P_amb'] = trajectory['Flowsheet.e0_P_amb'][init_ind]
+    simulator.u0['e0_Q_st1'] = trajectory['Flowsheet.e0_Q_st1'][init_ind]
+    simulator.u0['e0_Q_st2'] = trajectory['Flowsheet.e0_Q_st2'][init_ind]
+    simulator.u0['e0_Q_st3'] = trajectory['Flowsheet.e0_Q_st3'][init_ind]
+    simulator.u0['e0_Q_st0'] = trajectory['Flowsheet.e0_Q_st0'][init_ind]
+    simulator.u0['e0_Q_st4'] = trajectory['Flowsheet.e0_Q_st4'][init_ind]
+    simulator.u0['e0_Q_st5'] = trajectory['Flowsheet.e0_Q_st5'][init_ind]
+    simulator.u0['e0_Q_st6'] = trajectory['Flowsheet.e0_Q_st6'][init_ind]
+    simulator.u0['e0_Q_st7'] = trajectory['Flowsheet.e0_Q_st7'][init_ind]
+    simulator.u0['e0_Q_st8'] = trajectory['Flowsheet.e0_Q_st8'][init_ind]
+    simulator.u0['e0_greek_gamma_st0_i1'] = trajectory['Flowsheet.e0_greek_gamma_st0_i1'][init_ind]
+    simulator.u0['e0_V_tot_st1'] = trajectory['Flowsheet.e0_V_tot_st1'][init_ind]
+    simulator.u0['e0_V_tot_st2'] = trajectory['Flowsheet.e0_V_tot_st2'][init_ind]
+    simulator.u0['e0_V_tot_st3'] = trajectory['Flowsheet.e0_V_tot_st3'][init_ind]
+    simulator.u0['e0_V_tot_st4'] = trajectory['Flowsheet.e0_V_tot_st4'][init_ind]
+    simulator.u0['e0_V_tot_st5'] = trajectory['Flowsheet.e0_V_tot_st5'][init_ind]
+    simulator.u0['e0_V_tot_st6'] = trajectory['Flowsheet.e0_V_tot_st6'][init_ind]
+    simulator.u0['e0_V_tot_st7'] = trajectory['Flowsheet.e0_V_tot_st7'][init_ind]
+    simulator.u0['e0_V_tot_st8'] = trajectory['Flowsheet.e0_V_tot_st8'][init_ind]
+    simulator.u0['e0_V_Lspec_correlation_st1'] = trajectory['Flowsheet.e0_V_Lspec_correlation_st1'][init_ind]
+    simulator.u0['e0_V_Lspec_correlation_st2'] = trajectory['Flowsheet.e0_V_Lspec_correlation_st2'][init_ind]
+    simulator.u0['e0_V_Lspec_correlation_st3'] = trajectory['Flowsheet.e0_V_Lspec_correlation_st3'][init_ind]
+    simulator.u0['e0_V_Lspec_correlation_st4'] = trajectory['Flowsheet.e0_V_Lspec_correlation_st4'][init_ind]
+    simulator.u0['e0_V_Lspec_correlation_st5'] = trajectory['Flowsheet.e0_V_Lspec_correlation_st5'][init_ind]
+    simulator.u0['e0_V_tot_st0'] = trajectory['Flowsheet.e0_V_tot_st0'][init_ind]
+    simulator.u0['e0_V_Lspec_correlation_st6'] = trajectory['Flowsheet.e0_V_Lspec_correlation_st6'][init_ind]
+    simulator.u0['e0_V_Lspec_correlation_st7'] = trajectory['Flowsheet.e0_V_Lspec_correlation_st7'][init_ind]
+    simulator.u0['e0_V_Lspec_correlation_st8'] = trajectory['Flowsheet.e0_V_Lspec_correlation_st8'][init_ind]
+    simulator.u0['e0_V_V_min_st1'] = trajectory['Flowsheet.e0_V_V_min_st1'][init_ind]
+    simulator.u0['e0_V_V_min_st2'] = trajectory['Flowsheet.e0_V_V_min_st2'][init_ind]
+    simulator.u0['e0_V_V_min_st3'] = trajectory['Flowsheet.e0_V_V_min_st3'][init_ind]
+    simulator.u0['e0_V_V_min_st4'] = trajectory['Flowsheet.e0_V_V_min_st4'][init_ind]
+    simulator.u0['e0_V_V_min_st5'] = trajectory['Flowsheet.e0_V_V_min_st5'][init_ind]
+    simulator.u0['e0_V_V_min_st6'] = trajectory['Flowsheet.e0_V_V_min_st6'][init_ind]
+    simulator.u0['e0_V_V_min_st7'] = trajectory['Flowsheet.e0_V_V_min_st7'][init_ind]
+    simulator.u0['e0_V_Lspec_correlation_st0'] = trajectory['Flowsheet.e0_V_Lspec_correlation_st0'][init_ind]
+    simulator.u0['e0_V_V_min_st8'] = trajectory['Flowsheet.e0_V_V_min_st8'][init_ind]
+    simulator.u0['e0_V_V_min_st0'] = trajectory['Flowsheet.e0_V_V_min_st0'][init_ind]
+    simulator.u0['e0_a_Cond'] = trajectory['Flowsheet.e0_a_Cond'][init_ind]
+    simulator.u0['e0_c_V_st1'] = trajectory['Flowsheet.e0_c_V_st1'][init_ind]
+    simulator.u0['e0_c_V_st2'] = trajectory['Flowsheet.e0_c_V_st2'][init_ind]
+    simulator.u0['e0_c_V_st3'] = trajectory['Flowsheet.e0_c_V_st3'][init_ind]
+    simulator.u0['e0_c_V_st4'] = trajectory['Flowsheet.e0_c_V_st4'][init_ind]
+    simulator.u0['e0_c_V_st5'] = trajectory['Flowsheet.e0_c_V_st5'][init_ind]
+    simulator.u0['e0_c_V_st6'] = trajectory['Flowsheet.e0_c_V_st6'][init_ind]
+    simulator.u0['e0_c_V_st7'] = trajectory['Flowsheet.e0_c_V_st7'][init_ind]
+    simulator.u0['e0_c_V_st8'] = trajectory['Flowsheet.e0_c_V_st8'][init_ind]
+    simulator.u0['e0_greek_gamma_st0_i2'] = trajectory['Flowsheet.e0_greek_gamma_st0_i2'][init_ind]
+    simulator.u0['e0_c_V_st0'] = trajectory['Flowsheet.e0_c_V_st0'][init_ind]
+    simulator.u0['e0_greek_rho_st0_i1'] = trajectory['Flowsheet.e0_greek_rho_st0_i1'][init_ind]
+    simulator.u0['e0_greek_gamma_st9_i1'] = trajectory['Flowsheet.e0_greek_gamma_st9_i1'][init_ind]
+    simulator.u0['e0_greek_gamma_st9_i2'] = trajectory['Flowsheet.e0_greek_gamma_st9_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st9_i1'] = trajectory['Flowsheet.e0_greek_rho_st9_i1'][init_ind]
+    simulator.u0['e0_greek_rho_st9_i2'] = trajectory['Flowsheet.e0_greek_rho_st9_i2'][init_ind]
+    simulator.u0['e0_greek_rho_st9_i3'] = trajectory['Flowsheet.e0_greek_rho_st9_i3'][init_ind]
+    simulator.u0['e0_F_F_st9'] = trajectory['Flowsheet.e0_F_F_st9'][init_ind]
+    simulator.u0['e0_F_L_st9'] = trajectory['Flowsheet.e0_F_L_st9'][init_ind]
+    simulator.u0['e0_K_st9_i3'] = trajectory['Flowsheet.e0_K_st9_i3'][init_ind]
+    simulator.u0['e0_P_N2'] = trajectory['Flowsheet.e0_P_N2'][init_ind]
+    simulator.u0['e0_P_SV_st9'] = trajectory['Flowsheet.e0_P_SV_st9'][init_ind]
+    simulator.u0['e0_Q_st9'] = trajectory['Flowsheet.e0_Q_st9'][init_ind]
+    simulator.u0['e0_T_F_st9'] = trajectory['Flowsheet.e0_T_F_st9'][init_ind]
+    simulator.u0['e0_T_N2_st9'] = trajectory['Flowsheet.e0_T_N2_st9'][init_ind]
+    simulator.u0['e0_V_tot_st9'] = trajectory['Flowsheet.e0_V_tot_st9'][init_ind]
+    simulator.u0['e0_V_V_min_st9'] = trajectory['Flowsheet.e0_V_V_min_st9'][init_ind]
+    simulator.u0['e0_c_N2_st9'] = trajectory['Flowsheet.e0_c_N2_st9'][init_ind]
+    simulator.u0['e0_c_SV_st9'] = trajectory['Flowsheet.e0_c_SV_st9'][init_ind]
+    simulator.u0['e0_c_V_st9'] = trajectory['Flowsheet.e0_c_V_st9'][init_ind]
+    simulator.u0['e0_greek_rho_st0_i2'] = trajectory['Flowsheet.e0_greek_rho_st0_i2'][init_ind]
+    simulator.u0['e0_x_F_st9_i1'] = trajectory['Flowsheet.e0_x_F_st9_i1'][init_ind]
+    simulator.u0['e0_x_F_st9_i2'] = trajectory['Flowsheet.e0_x_F_st9_i2'][init_ind]
+    simulator.u0['e0_x_F_st9_i3'] = trajectory['Flowsheet.e0_x_F_st9_i3'][init_ind]
+    simulator.u0['e0_x_N2_st9_i1'] = trajectory['Flowsheet.e0_x_N2_st9_i1'][init_ind]
+    simulator.u0['e0_x_N2_st9_i2'] = trajectory['Flowsheet.e0_x_N2_st9_i2'][init_ind]
+    simulator.u0['e0_x_N2_st9_i3'] = trajectory['Flowsheet.e0_x_N2_st9_i3'][init_ind]
+    simulator.u0['e0_greek_rho_st0_i3'] = trajectory['Flowsheet.e0_greek_rho_st0_i3'][init_ind]
 
     # fmt:on
     return simulator
+
+def u_from_trajectory(trajectory=-1,idx=0):
+    if trajectory == -1:
+        trajectory = pd.read_pickle("./Data/alldata.pck")
+        us = {}
+        INPUT_vars = pickle.load(open("./Data/Input_variables.dat","rb"))
+        for var in INPUT_vars:
+            us[var] = trajectory["Flowsheet."+var].iloc[idx]
+        
+        return us
+    
+    
+def update_u(simulator,trajectory=-1,idx=0,getoutput=False):
+    
+    if trajectory == -1:
+        trajectory = pd.read_pickle("./Data/alldata.pck")
+        
+    us = {}
+    INPUT_vars = pickle.load(open("./Data/Input_variables.dat","rb"))
+    simulator.u0["e0_greek_sigma_R"] = trajectory["Flowsheet."+"e0_greek_sigma_R"].iloc[idx]
+    for var in INPUT_vars:
+        us[var] = trajectory["Flowsheet."+var].iloc[idx]
+        # breakpoint()
+        simulator.u0[var] = us[var]
+    # breakpoint()   
+    if getoutput:
+            return us
+    
+    
 
 
 
 
 if __name__ == "__main__":
-    model = template_model()
-    simulator = template_simulator(model)
+    
+    
+    index = 10000
+    model = template_model(init_ind=index)
+    simulator = template_simulator(model,init_ind=index)
 
     params_simulator = {
         "integration_tool": "idas",
-        "abstol": 1e-5,
-        "reltol": 1e-5,
+        "abstol": 1e-3,
+        "reltol": 1e-3,
         "t_step": 0.005,
     }
     simulator.set_param(**params_simulator)
     simulator.setup()
     simulator.set_initial_guess()
     
-    # simulator.u0["e0_F_F_st9"] = 0.001 #
-    # simulator.u0["e0_greek_sigma_R"] = 0
-    # simulator.z0["e0_V_L_st9"] = 0.0100
     
-#     idx1 = idx2 = 0
-    
-    for idx1 in range(1):
+    for idx in range(3):
+        # ut = u_from_trajectory(idx=1000)
         u0 = simulator.u0.master
+        update_u(simulator,trajectory=-1,idx=20000,getoutput=False)
+        # u0 = simulator.u0
         simulator.make_step(u0)
-    original_u0=simulator.data["_u"]
+    
+    
+        
+
+
+    # timestep = params_simulator["t_step"]
+    # fig, ax = plt.subplots(2,sharex=True)
+    # ax[0].plot(simulator.data["_time"],
+    #         simulator.data["_u","e0_V_tot_st9"],label="st 9")
+    # ax[0].plot(simulator.data["_time"],
+    #         simulator.data["_u","e0_V_tot_st7"],label="st 7")
+    # ax[0].plot(simulator.data["_time"],
+    #         simulator.data["_u","e0_V_tot_st4"],label="st 4")
+    # ax[0].plot(simulator.data["_time"],
+    #         simulator.data["_u","e0_V_tot_st2"],label="st 2")
+    # ax[0].set_ylabel("V")
+    # ax[0].legend()
+    # ax[0].set_title("V_tot_i at stages 2,4,7 and 9")
+    
+    # ax[1].plot(simulator.data["_time"],simulator.data["_z","e0_V_L_st9"],label="")
+    # ax[1].set_ylabel("liquid volume")
+    # ax[1].set_xlabel("Time in seconds")
+    # ax[1].set_title("V_liquid at reboiler")
+    
+    
+    # fig, ax1 = plt.subplots(2,sharex=True)
+    # ax1[0].plot(simulator.data["_time"],
+    #             simulator.data["_z","e0_y_st9_i1"],label="y_1")
+    # ax1[0].plot(simulator.data["_time"],
+    #             simulator.data["_z","e0_y_st9_i2"],label="y_2")
+    # ax1[0].plot(simulator.data["_time"],
+    #             simulator.data["_z","e0_y_st9_i3"],label="y_N2")
+    # ax1[0].set_ylabel("vapor fraction")
+    # ax1[0].legend()
+    # ax1[0].set_title("x_i and y_i at reboiler")
+    
+    
+    
+    # ax1[1].plot(simulator.data["_time"],
+    #             simulator.data["_z","e0_x_st9_i1"],label="x_1")
+    # ax1[1].plot(simulator.data["_time"],
+    #             simulator.data["_z","e0_x_st9_i2"],label="x_2")
+    # ax1[1].plot(simulator.data["_time"],
+    #             simulator.data["_z","e0_x_st9_i3"],label="x_N2")
+    # ax1[1].set_ylabel("liquid fraction")
+    # ax1[1].set_xlabel("Time in seconds")
+    # ax1[1].legend()
+    # plt.show()
         
         
         
         
-# if __name__ == "__main__":
-#     model = template_model()
-#     simulator = template_simulator(model)
-
-#     params_simulator = {
-#         "integration_tool": "idas",
-#         "abstol": 1e-10,
-#         "reltol": 1e-10,
-#         "t_step": 0.005,
-#     }
-#     simulator.set_param(**params_simulator)
-#     simulator.setup()
-#     simulator.set_initial_guess()
-    
-#     simulator.u0["e0_F_F_st9"] = 0.0
-#     simulator.u0["e0_greek_sigma_R"] = 0
-#     simulator.z0["e0_V_L_st9"] = 0.0100
-
-#     for idx in range(100):
-#         u0 = simulator.u0.master
-#         simulator.make_step(u0)
-#         print(simulator.z0["e0_V_L_st9"],
-#               simulator.z0["e0_V_V_st9"],
-#               simulator.u0["e0_V_tot_st9"],
-#               simulator.u0["e0_greek_sigma_R"],
-#               "\n",
-#               sep="\n")
+        
+    # def pplot(simulator,var={"_z":["e0_x_st9_i1","e0_x_st9_i2","e0_x_st9_i3"]},stages=[9],
+    #          with_leg=True,legend=["x_st9_i1","x_st9_i1","x_st9_i1"],title="x at reboiler"):
+    #     ts = simulator.data["_time"].copy()
+    #     ys = []
+    #     for key, value_list in var.items():
+    #         for value in value_list:
+    #             ys.append(simulator.data[key,value].copy())
+        
+    #     plt.figure(num=10)
+    #     for ind, y in enumerate(ys):
+    #         plt.plot(ts,y,label=legend[ind])
+            
+    #     if with_leg:
+    #         plt.legend()
+    #     # plt.grid()
+    #     plt.title(title)
+        
+    # # plot(simulator,var={"_z":["e0_F_N2_st9"]},title="N2 Feed at reboiler",legend=[""])
+    # pplot(simulator,var={"_z":["e0_V_V_st9","e0_V_L_st9"]},legend=["V_V","V_L"],with_leg=True)        
 
 
-#     # fig, ax, graphics = do_mpc.graphics.default_plot(
-#     #     simulator.data, dae_states_list=[], inputs_list=[]
-#     # )
-#     # fig, ax, graphics = do_mpc.graphics.default_plot(
-#     #     simulator.data, dae_states_list=[], inputs_list=[]
-#     # )
-    
-#     fig, ax = plt.subplots(1,sharex=True)
-#     ax.plot(simulator.data["_time"],simulator.data["_u","e0_V_tot_st9"],label="st 9")
-#     ax.plot(simulator.data["_time"],simulator.data["_u","e0_V_tot_st7"],label="st 7")
-#     ax.plot(simulator.data["_time"],simulator.data["_u","e0_V_tot_st4"],label="st 4")
-#     ax.plot(simulator.data["_time"],simulator.data["_u","e0_V_tot_st2"],label="st 2")
-#     ax.set_ylabel("T in K")
-#     ax.set_xlabel("Time in seconds")
-#     ax.legend()
 
-#     plt.show()
-    
-    
+
+
+
+
+
+
+
+
+
