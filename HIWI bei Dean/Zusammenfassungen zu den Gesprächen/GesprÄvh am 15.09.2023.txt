@@ -1,0 +1,11 @@
+
+am 15.09.2023
+Nächste Schritte für Ben:
+- eine ganze trajektorie (in der mitte) nachmzchen oder überhaupt rechnen
+- verschiedene Trajektorien probieren und abspeichern (batch1, batch2, ...) und vergleichen mit Torbens (wichtigste Zustände vergleichen)
+- ob sharpness factor noch relevant ist
+- jupytrt code sauber machen und pushen und umwandeln in .py
+
+- Inputs von Torbens Rezepten verstehen und selber fahren
+- David Silva
+- environment aus modell (python simulationsmodell) aufbauen (control action einlesen, befehl (make step), reward designen (wie?)) => Architektur dafür überlegen

@@ -1,0 +1,32 @@
+Besprochen:
+V0 = 0,319 L
+eventuel werden wir model based und nicht model based probieren
+oder vllt übernehmen die Münchener Kollegen das
+
+Thetas = actions (Siehe Rezeptbeispiel in den Folien)
+Agent muss lernen alle Thetas zu optimieren
+
+Zu RL env: Environment mit den Spezifikationen aufbauen:
+agent ist NN
+batch heist eposidic tasks
+alle 18 Schritte werden durcjgeführt => Batch zu ende = episode zu ende
+Reward für alle schritte oder am Ende
+Environment aufbaun das kompatibel mit Framework der Münchener Kollegen ist
+Framework der Münchener Kollegen beschäftigt sich mit der Erstellung von Flowsheets
+Reward : 0 bei allen au3er dass man den Batch beendet hat
+Strafen: Zu hoher Druck, sicherheitswirdigkeiten, niedrige Konzentration, energy costs,...
+s = (y,step,theta_vektor)^T
+y = (R, T, P ...)
+step: einer aus den 18 Schritten
+aux: Infos über vergangene Entscheidungen
+a = pi(s) = theta_i
+Anfrderung an env: Eindeutiger Zudtand, Modell muss funktionieren, Reward/penalty design, cumulative cost minimieren (summe der costs aus allen 18 Schritten)
+NARX mit 3 vorherigen Schritten (Torbens Arbeit)
+
+
+
+Nächste Schritte:
+manuell initial conds am ende jedes Batches setzen und weiterfahren statt weitersimulieren
+von Silver bis Vorlesung 7 fukntionsapproximatoren: verstehe was für envs wichtig ist
+Erster Versuch eine Env aufzubauen
+

@@ -2341,6 +2341,8 @@ def u_from_trajectory(trajectory=-1,idx=0):
         return us
     
     
+    
+    
 def update_u(simulator,trajectory=-1,use_time=False,time=0,idx=0,getoutput=False):
     
     if trajectory == -1:
@@ -2351,9 +2353,6 @@ def update_u(simulator,trajectory=-1,use_time=False,time=0,idx=0,getoutput=False
         idx = list(time_diff == np.min(time_diff) ).index(True)
         del time_diff
         
-        
-        
-        
     us = {}
     INPUT_vars = pickle.load(open("./Data/Input_variables.dat","rb"))
     simulator.u0["e0_greek_sigma_R"] = trajectory["Flowsheet."+"e0_greek_sigma_R"].iloc[idx]
@@ -2362,6 +2361,54 @@ def update_u(simulator,trajectory=-1,use_time=False,time=0,idx=0,getoutput=False
         simulator.u0[var] = us[var]
     if getoutput:
             return us
+                
+        
+
+        
+        
+def update_x(simulator,trajectory=-1,use_time=False,time=0,idx=0,getoutput=False):
+    
+    if trajectory == -1:
+        trajectory = pd.read_pickle("./Data/alldata.pck")
+    
+    # seek the nearest time point fron the trajectory
+    if use_time:
+        time_diff = np.abs(trajectory["Time"].to_numpy()-time)
+        idx = list(time_diff == np.min(time_diff) ).index(True)
+        del time_diff
+        
+    xs = {}
+    INPUT_vars = pickle.load(open("./Data/State_variables.dat","rb"))
+    # simulator.x0["e0_greek_sigma_R"] = trajectory["Flowsheet."+"e0_greek_sigma_R"].iloc[idx]
+    for var in INPUT_vars:
+        xs[var] = trajectory["Flowsheet."+var].iloc[idx]
+        simulator.x0[var] = xs[var]
+    if getoutput:
+            return xs
+        
+        
+        
+        
+
+def update_z(simulator,trajectory=-1,use_time=False,time=0,idx=0,getoutput=False):
+    
+    if trajectory == -1:
+        trajectory = pd.read_pickle("./Data/alldata.pck")
+    
+    # seek the nearest time point fron the trajectory
+    if use_time:
+        time_diff = np.abs(trajectory["Time"].to_numpy()-time)
+        idx = list(time_diff == np.min(time_diff) ).index(True)
+        del time_diff
+        
+    zs = {}
+    INPUT_vars = pickle.load(open("./Data/DAE_variables.dat","rb"))
+    # simulator.u0["e0_greek_sigma_R"] = trajectory["Flowsheet."+"e0_greek_sigma_R"].iloc[idx]
+    for var in INPUT_vars:
+        zs[var] = trajectory["Flowsheet."+var].iloc[idx]
+        simulator.z0[var] = zs[var]
+    if getoutput:
+            return zs
     
     
 
@@ -2370,38 +2417,117 @@ def update_u(simulator,trajectory=-1,use_time=False,time=0,idx=0,getoutput=False
 
 if __name__ == "__main__":
     trajectory = pd.read_pickle("./Data/alldata.pck")
-    index_array = np.arange(len(trajectory["Time"]))
-    # plt.plot(index_array,trajectory["Flowsheet.e0_HU_L_st9"].to_numpy())
-    batch_indexes = {"B1":[500,3000],
-                 "B2":[3300,5900],
-                 "B3":[6200,8400],
-                 "B4":[9000,12500],
-                 "B5":[12000,14600],
-                 "B6":[15000, 17600],
-                 "B7":[17900, 20000],
-                 "B8":[20500, 23000],
-                 "B9":[23350, 25800],
-                 "B10":[26300, 29500]}
+    
+    index_range = list(range(len(trajectory)))
+    vls = trajectory["Flowsheet.e0_V_L_st9"].to_numpy()
+    
+    batch_end_vascinity1 = vls[3000:3300]
+    batch_end_vascinity2 = vls[6000:6010]
+    batch_end_vascinity3 = vls[8820:8830]
+    batch_end_vascinity4 = vls[9000:11000]
+    batch_end_vascinity5 = vls[11590:11593]
+    batch_end_vascinity6 = vls[14700:14704]
+    batch_end_vascinity7 = vls[17700:17709]
+    batch_end_vascinity8 = vls[23162:23165]
+    batch_end_vascinity9 = vls[25920:25923]
+    
+    batch_end_vascinity10 = vls[9000:11000]
 
-    index_max = len(trajectory) - 1  # 28885
-    batch = "B1"
-    index0 = batch_indexes[batch][0]
-    
-    model = template_model(init_ind=index0)
-    simulator = template_simulator(model,init_ind=index0)
-    
-    params_simulator = {
-        "integration_tool": "idas",
-        "abstol": 1e-3,
-        "reltol": 1e-3,
-        "t_step": 1,
-    }
-    simulator.set_param(**params_simulator)
-    simulator.setup()
-    simulator.set_initial_guess()
     
     
+    plt.figure(num=1)
+    ind0, ind_end = 27000, 28884
+    plt.plot(index_range[ind0:ind_end], vls[ind0:ind_end])
     
+    min_value = min(vls[ind0:ind_end])
+    min_ind = vls[ind0:ind_end].argmin()
+    min_ind = np.diff(vls[ind0:ind_end]).argmax()
+    plt.plot(ind0+min_ind, min_value,"o")
+    
+    batch_end_index1 = 3000 + trajectory["Flowsheet.e0_V_L_st9"].to_numpy()[3000:3300].argmin()
+    batch_end_index2 = 6000 + np.diff(trajectory["Flowsheet.e0_V_L_st9"].to_numpy()[6000:6010]).argmax()
+    batch_end_index3 = 8820 + np.diff(trajectory["Flowsheet.e0_V_L_st9"].to_numpy()[8820:8830]).argmax()
+    batch_end_index4 = 9000 + np.diff(trajectory["Flowsheet.e0_V_L_st9"].to_numpy()[9000:11000]).argmax()
+    batch_end_index5 = 11590 + np.diff(trajectory["Flowsheet.e0_V_L_st9"].to_numpy()[11590:11593]).argmax()
+    batch_end_index6 = 14700 + np.diff(trajectory["Flowsheet.e0_V_L_st9"].to_numpy()[14700:14704]).argmax()
+    batch_end_index7 = 17700 + np.diff(trajectory["Flowsheet.e0_V_L_st9"].to_numpy()[17700:17709]).argmax()
+    batch_end_index8 = 23162 + np.diff(trajectory["Flowsheet.e0_V_L_st9"].to_numpy()[23162:23165]).argmax()
+    batch_end_index9 = 25920 + np.diff(trajectory["Flowsheet.e0_V_L_st9"].to_numpy()[25920:25923]).argmax()
+    batch_end_index10 = len(trajectory["Flowsheet.e0_V_L_st9"].to_numpy())-1
+    
+    print(batch_end_index1)
+    print(batch_end_index2)
+    print(batch_end_index3)
+    print(batch_end_index4)
+    print(batch_end_index5)
+    print(batch_end_index6)
+    print(batch_end_index7)
+    print(batch_end_index8)
+    print(batch_end_index9)
+    print(batch_end_index10)
+    
+    # indexe = []
+    # mins = {}
+    # for ind, vl in enumerate(trajectory["Flowsheet.e0_V_L_st9"].to_numpy()):
+    #     if np.abs(vl) < 1e-7:
+    #         print(ind)
+    #         indexe.append(ind)
+    #         mins[ind] = vl
+    
+
+    
+    
+    # index_array = np.arange(len(trajectory["Time"]))
+    # # plt.plot(index_array,trajectory["Flowsheet.e0_HU_L_st9"].to_numpy())
+    # batch_indexes = {"B1":[500,3000],
+    #              "B2":[3300,5900],
+    #              "B3":[6200,8400],
+    #              "B4":[9000,12500],
+    #              "B5":[12000,14600],
+    #              "B6":[15000, 17600],
+    #              "B7":[17900, 20000],
+    #              "B8":[20500, 23000],
+    #              "B9":[23350, 25800],
+    #              "B10":[26300, 29500]}
+
+    # index_max = len(trajectory) - 1  # 28885
+    # batch = "B1"
+    # index0 = batch_indexes[batch][0]
+    
+    # model = template_model(init_ind=index0)
+    # simulator = template_simulator(model,init_ind=index0)
+    
+    # params_simulator = {
+    #     "integration_tool": "idas",
+    #     "abstol": 1e-3,
+    #     "reltol": 1e-3,
+    #     "t_step": 1,
+    # }
+    # simulator.set_param(**params_simulator)
+    # simulator.setup()
+    # simulator.set_initial_guess()
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

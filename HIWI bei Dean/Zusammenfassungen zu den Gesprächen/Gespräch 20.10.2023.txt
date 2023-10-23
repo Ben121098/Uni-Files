@@ -1,0 +1,23 @@
+Notizen zum vorgestelletn Papier:
+lower action = heizrate, flow ret
+weighting matrices: nach jedem schritt in mpc
+eps_term fpür contraints violation
+sampling teil ist relevant
+
+
+
+Anmerkungen zur Herangehensweise:
+vor model.setup setzte model.set_meas()
+measurements = füllstand, jede Temperatur*10, druck unten, druck obrn, druckdiff, konzentration am Kopf und Sumpf
+aus makestep bekommt man noch den cost
+cost=delta_t+großebewegungen_Term+contraint_violations_term
+wie contraint_violations_term:= max[0,h]   h<0 => feasable   h>0 => contraint_violations_term=h*scalierungswerrt (100 z.B.)
+classe so gestalten, dass intial conds übernommen werden können
+simulationsende: max dauer, minimale Konzentration am Kopf, min Füllstand erreicht
+
+
+
+
+für nächstes Treffen:
+Erster Entwuf der Klasse wie das Flash-Beispiel
+Cost function design
