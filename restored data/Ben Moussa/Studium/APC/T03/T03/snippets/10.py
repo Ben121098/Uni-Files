@@ -1,0 +1,2 @@
+# Input to the system
+u = np.array([1]).reshape(nu,1)

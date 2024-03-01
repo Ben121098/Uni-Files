@@ -1,0 +1,12 @@
+Mazen:
+Montagstermin um 9 Uhr in E16 zur Herstellung der Verbindung mit gproms
+Danach Herstellung der Verbindung zwsch Rezeptklasse und gproms über server 
+Wichtig herauszufinden: Repoting time wie groß? 10 s, 30 s, ... ?
+
+Kjell:
+NARX in open loop laufen lassen
+adamD probieren
+
+
+
+Nächstes Treffen am Mittwoch 17.01.2024 um 16 Uhr 30

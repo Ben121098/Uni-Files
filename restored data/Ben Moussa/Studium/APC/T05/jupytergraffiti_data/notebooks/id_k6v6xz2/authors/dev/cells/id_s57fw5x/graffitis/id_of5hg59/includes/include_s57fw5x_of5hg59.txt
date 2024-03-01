@@ -1,0 +1,9 @@
+N=100
+P=np.zeros((N,nx,nx))
+K=np.zeros((N,nu,nx))
+P[N-1]=S
+K[N-1]=-np.linalg.inv(R+B.T@P[N-1]@B)@B.T@P[N-1]@A
+
+for k in range(N-1):
+    P[N-2-k]=Q+A.T@P[N-1-k]@A-A.T@P[N-1-k]@B@np.linalg.inv(R+B.T@P[N-1-k]@B)@B.T@P[N-1-k]@A
+    K[N-2-k]=np.linalg.inv(R+B.T@P[N-2-k]@B)@B.T@P[N-2-k]@A

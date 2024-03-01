@@ -1,0 +1,15 @@
+def simulate(x_0, u_k, N_sim):
+    res_x = [x_0]
+    y = measurement(x_0).full()
+    res_y = [y]
+
+    for i in range(N_sim):
+        x_0 = system(x_0, u_k).full()
+        y = measurement(x_0)
+        res_x.append(x_0)
+        res_y.append(y)
+
+    res_x = np.concatenate(res_x, axis=1)
+    res_y = np.concatenate(res_y, axis=1)
+
+    return res_x, res_y

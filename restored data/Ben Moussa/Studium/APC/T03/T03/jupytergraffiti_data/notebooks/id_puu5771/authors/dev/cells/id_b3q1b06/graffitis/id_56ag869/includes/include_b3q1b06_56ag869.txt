@@ -1,0 +1,25 @@
+# Defining number of steps 
+N_sim = int(60/step_size)
+
+# Create noise variances
+var_x = 1e-6
+var_y = 1e-3
+
+# Saving the data
+x_data = [x0]
+x_hat_data = [x0_observer]
+y_measured = []
+
+# Luenberger observer
+for i in range(N_sim):
+    # Gaussian noise added to the process and the measurements
+    w_x = np.random.normal(0, np.sqrt(var_x), nx).reshape(nx, 1)
+    w_y = np.random.normal(0, np.sqrt(var_y), ny).reshape(ny, 1)
+    
+    y = C @ x0 + w_y
+    y_measured.append(y[0])
+    x0 = A_discrete @ x0 + B_discrete @ u + w_x
+    x_data.append(x0)
+    y_hat = C @ x0_observer
+    x0_observer = A_discrete @ x0_observer + B_discrete @ u + L @ (y - y_hat)
+    x_hat_data.append(x0_observer)

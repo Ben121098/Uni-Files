@@ -1,0 +1,16 @@
+def observability_matrix(A,C):
+    nx = A.shape[0]
+    O = C
+    
+    for k in range(1,nx):
+        O = np.concatenate((O, C@np.linalg.matrix_power(A,k)))
+        
+    return O
+
+# Get the observability matrix
+O = observability_matrix(A,C)
+
+
+# Rank of the observability matrix
+Rank = np.linalg.matrix_rank(O)
+print(f'Rank = {Rank}')

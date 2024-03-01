@@ -1,0 +1,20 @@
+x0 = np.array([2, 2.8, 2.7]).reshape([-1, 1])
+x_observer = np.array([1.2, 1.4, 1.8]).reshape([-1, 1])
+
+# Define the measurement covariance matrix
+R = np.array([0.01])
+
+# Covariance matrix of the state noise
+q1 = 1e-3;
+q2 = 1e-3;
+q3 = 1e-3;
+
+Q = np.diag([q1, q2,q3]);
+
+# Covariance Matrix of initial error
+P0 = Q ;
+N_sim = 200
+
+#call EKF function
+[plant_state, obs_state_discrete, plant_measurement] = discrete_EKF_filter(x0, x_observer, P0, Q, R, N_sim )
+visualize(plant_state, obs_state_discrete)

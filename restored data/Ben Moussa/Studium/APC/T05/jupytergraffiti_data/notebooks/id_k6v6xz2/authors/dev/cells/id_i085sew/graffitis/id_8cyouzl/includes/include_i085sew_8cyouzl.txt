@@ -1,0 +1,1 @@
+lam, v = np.linalg.eig(A)

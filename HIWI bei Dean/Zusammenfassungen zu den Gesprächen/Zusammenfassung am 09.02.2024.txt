@@ -1,0 +1,17 @@
+Dean
+
+
+
+
+Mazen
+rabdom seed
+wenn das steht ueberpruefe eckpunkte
+10 Variablen aber mehrere sind irrelevant
+Kombinationen die reibungsfrei simu
+theta8 = reflux ratio zwischen 0.8 und 1 bleiben
+theta3 und theta 6 geh nicht bis 0 da sonst unsinnige Resultate
+delta_t groeser machen 10, 30 60s
+
+
+Kjell
+NARX und MPC

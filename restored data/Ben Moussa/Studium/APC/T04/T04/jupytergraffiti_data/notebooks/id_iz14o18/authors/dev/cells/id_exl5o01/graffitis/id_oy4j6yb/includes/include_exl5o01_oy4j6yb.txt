@@ -1,0 +1,12 @@
+# defining auxiliary variables
+q13 = r1 * sp * sign(x[0] - x[2]) * sqrt(2 * g * fabs(x[0] - x[2]))
+q32 = r3 * sp * sign(x[2] - x[1]) * sqrt(2 * g * fabs(x[2] - x[1]))
+q20 = r2 * sp * sqrt(2 * g * x[1])
+
+# non-linear discrete equations
+x_next_1 = x[0] + (Ts / A) * (-q13 + u[0])
+x_next_2 = x[1] + (Ts / A) * (q32 - q20 + u[1])
+x_next_3 = x[2] + (Ts / A) * (q13 - q32)
+
+# concatenated into one vector
+x_next = vertcat(x_next_1, x_next_2, x_next_3)

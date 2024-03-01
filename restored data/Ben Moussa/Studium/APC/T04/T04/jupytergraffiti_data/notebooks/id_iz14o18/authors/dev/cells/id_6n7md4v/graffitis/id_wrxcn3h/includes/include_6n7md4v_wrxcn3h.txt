@@ -1,0 +1,10 @@
+def discrete_EKF_filter(x0, x0_observer, P_0, Q, R, N_sim):
+    # defining empty list
+    x_data = [x0]
+    x_hat_data = [x0_observer]
+    y_measured = []
+    # defining noise variance
+    var_x = Q @ np.ones([nx, 1])
+    var_y = R @ np.ones([ny, 1])
+
+    return x_data, x_hat_data, y_measured

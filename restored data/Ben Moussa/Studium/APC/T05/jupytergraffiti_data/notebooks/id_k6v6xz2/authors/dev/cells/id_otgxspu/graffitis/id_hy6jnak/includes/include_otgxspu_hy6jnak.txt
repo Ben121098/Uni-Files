@@ -1,0 +1,4 @@
+P=lin.solve_discrete_are(A,B,Q,R)
+K=np.linalg.inv(R+B.T@P@B)@B.T@P@A
+print(K)
+print(K_end)

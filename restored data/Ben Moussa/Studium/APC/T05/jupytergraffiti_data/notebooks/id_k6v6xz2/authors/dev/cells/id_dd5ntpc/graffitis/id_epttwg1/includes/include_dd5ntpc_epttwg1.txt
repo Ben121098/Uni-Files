@@ -1,0 +1,14 @@
+def visualize_results(t,x,u): 
+    nx = x.shape[1]
+    nu = u.shape[1]
+    n_plots = nx + nu
+    fig, ax = plt.subplots(n_plots,1, sharex=True)
+    for k in range(nx):
+        ax[k].plot(t, x[:,k])
+        ax[k].set_ylabel('x{}'.format(k))
+    for k in range(nu):
+        ax[nx+k].plot(t, u[:,k])
+        ax[nx+k].set_ylabel('u{}'.format(k))
+    ax[-1].set_xlabel('time [s]')
+    fig.align_ylabels()
+visualize_results(t,x_data,u_step)

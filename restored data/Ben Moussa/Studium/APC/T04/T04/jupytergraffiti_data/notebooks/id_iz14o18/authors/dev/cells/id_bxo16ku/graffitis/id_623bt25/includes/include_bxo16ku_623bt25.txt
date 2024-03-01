@@ -1,0 +1,37 @@
+def discrete_EKF_filter(x0, x0_observer, P_0, Q, R, N_sim):
+    # defining empty list
+    x_data = [x0]
+    x_hat_data = [x0_observer]
+    y_measured = []
+    # defining noise variance
+    var_x = Q @ np.ones([nx, 1])
+    var_y = R @ np.ones([ny, 1])
+
+
+    for j in range(N_sim):
+        # Gaussian noise for the plant and measurement
+        wx = np.random.normal(0, np.sqrt(var_x)).reshape(nx, 1)
+        wy = np.random.normal(0, np.sqrt(var_y)).reshape(ny, 1)
+       
+        # Measurement update / Correction
+        C_tilda =C_fun(x0_observer).full()
+        L = P_0 @ C_tilda.T @ inv(C_tilda @ P_0 @ C_tilda.T + R)
+
+        x0 = system(x0, u_k).full() + wx
+        y = measurement(x0).full() + wy
+        x0_observer = x0_observer + L @ (y - C_tilda @ x0_observer)
+        P_0 = (np.eye(nx) - L @ C_tilda) @ P_0
+
+        x_data.append(x0)
+        x_hat_data.append(x0_observer)
+        y_measured.append(y)
+
+        # Prediction_step
+        x0_observer = system(x0_observer, u_k).full()  # x[k+1|k]
+        A = A_fun(x0_observer, u_k)
+        P_0 = A @ P_0 @ A.T + Q  # P[k+1|k]
+
+    x_data = np.concatenate(x_data, axis=1)
+    x_hat_data = np.concatenate(x_hat_data, axis=1)
+
+    return x_data, x_hat_data, y_measured

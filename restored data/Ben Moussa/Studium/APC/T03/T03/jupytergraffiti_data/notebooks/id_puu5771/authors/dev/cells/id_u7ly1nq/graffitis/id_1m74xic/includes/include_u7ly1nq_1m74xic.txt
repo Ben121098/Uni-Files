@@ -1,0 +1,8 @@
+# Formulate the obsevability matrix and print it
+Observability_matrix = np.concatenate((C, C @ A))
+print(f'Observability Matrix = {Observability_matrix}')
+
+# Rank of the system matrix
+Rank = np.linalg.matrix_rank(Observability_matrix)
+print(f'Rank = {Rank}')
+print('As the rank of the observability matrix is equal to the system order, then the system is observable.')

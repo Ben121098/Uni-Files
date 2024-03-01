@@ -1,0 +1,3 @@
+plt.figure()
+plt.plot(K.squeeze())
+K_end=K[0]

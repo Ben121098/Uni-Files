@@ -1,0 +1,5 @@
+# output function symbolically
+y_k = x[2]
+
+# CasADi function for the measurements
+measurement = Function('y_k', [x], [y_k])

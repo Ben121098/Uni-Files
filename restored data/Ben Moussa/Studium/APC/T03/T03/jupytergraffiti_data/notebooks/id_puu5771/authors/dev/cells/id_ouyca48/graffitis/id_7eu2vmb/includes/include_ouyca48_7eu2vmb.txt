@@ -1,0 +1,4 @@
+# Define new eigen values and calculate the observer gain
+New_eigen_val = np.array([0.3, 0.5])
+L = control.place(A.T, C.T, New_eigen_val).T
+print(L)

@@ -1,0 +1,2 @@
+A_c=A-B@K
+lam, v = np.linalg.eig(A_c)

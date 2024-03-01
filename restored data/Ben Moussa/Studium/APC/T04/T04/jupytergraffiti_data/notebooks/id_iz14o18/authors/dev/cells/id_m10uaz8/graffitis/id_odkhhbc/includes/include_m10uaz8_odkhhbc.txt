@@ -1,0 +1,15 @@
+def obs_check(x0, u_k ,N_sim):
+    observable = True
+    states, _ = simulate(x0, u_k, N_sim)
+
+    for i in range(N_sim):
+        
+        if not observable:
+            break
+
+        A_tilde = A_fun(states[:, i],u_k)
+        C_tilde = C_fun(states[:, i])
+        O = observability_matrix(A_tilde, C_tilde)
+        observable = np.linalg.matrix_rank(O) == nx
+
+    return observable

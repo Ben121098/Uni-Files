@@ -1,0 +1,2 @@
+N_sim = 200
+obs_check(initial_one, u_k, N_sim)

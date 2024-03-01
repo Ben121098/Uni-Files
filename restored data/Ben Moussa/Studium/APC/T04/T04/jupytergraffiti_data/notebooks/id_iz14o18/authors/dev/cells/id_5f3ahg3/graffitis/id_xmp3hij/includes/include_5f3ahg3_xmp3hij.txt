@@ -1,0 +1,2 @@
+# defining CasADi function
+system = Function('x_next', [x,u], [x_next])

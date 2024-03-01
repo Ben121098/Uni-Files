@@ -1,0 +1,8 @@
+# Defining inital condition and the number of steps 
+initial_one = np.array([2, 2.8, 2.7]).reshape([-1, 1])
+initial_two = np.array([1.2, 1.4, 1.8]).reshape([-1, 1])
+N_sim = 200
+
+# Call the function "simulate"
+state_one, measurement_one = simulate(initial_one, u_k, N_sim)
+state_two, measurement_two = simulate(initial_two, u_k, N_sim)

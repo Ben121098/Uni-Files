@@ -1,0 +1,12 @@
+def visualize(x_data, x_hat_data):
+    fig, ax = plt.subplots(nx)
+    fig.suptitle('EKF Observer')
+
+    for i in range(nx):
+        ax[i].plot(x_data[i, :], label='real state')
+        ax[i].plot(x_hat_data[i, :],"r--", label='estimated state')
+        ax[i].set_xticklabels([])
+
+    ax[-1].set_xlabel('time_steps')
+    fig.legend()
+    plt.show()

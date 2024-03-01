@@ -1,0 +1,29 @@
+Fragen:
+Wie Rezeptstruktur
+Was soll Rezept machen können
+Connection
+wird noch simulator benötigt => Klasse updaten
+
+für sampling ausreichend
+nicht mehr mit do_mpc integrieren
+ent managet interaction mit gproms
+
+sampling nur wie es gerade ist
+
+control loop klassen und code ist eine andere geschichte
+
+sampling: mpc betrieben, einfacheres modell, ersatzmodell, weniger parameters zur Erstelung der daten erstmal
+
+mpc statt simulator
+
+konzentriere dich auf thetas sampling !!!
+
+server starten 
+satrte gproms simulation
+gproms wartet
+vom rezept hinschiecken  
+
+ansätze konzepte und hintergründe verstehen
+rechnn muss man können
+
+multistage complexity steigt

@@ -1,0 +1,18 @@
+# Number of states (nx), input (nu) and measured output (ny)
+nx = 3
+nu = 1
+ny = 1
+
+# Model parameter
+kAB = 1.5
+kBC = 3
+kCB = 2
+dvdt = 1
+VR = 10
+
+# Continous-time model in state space form
+A = np.array([[-kAB - dvdt / VR, 0, 0],
+              [kAB, -kBC - dvdt / VR, kCB],
+              [0, kBC, -kCB - dvdt / VR]]).reshape(nx, nx)
+B = np.array([[dvdt / VR], [0], [0]]).reshape(nx, nu)
+C = np.array([[0, 1, 0]]).reshape(ny, nx)

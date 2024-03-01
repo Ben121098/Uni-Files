@@ -1,0 +1,7 @@
+# calculating the jacobins
+a_tilde = jacobian(x_next,x)
+c_tilde = jacobian(y_k,x)
+
+# CasAdi Functions
+A_fun = Function('A_fun', [x,u], [a_tilde])
+C_fun = Function('C_fun', [x], [c_tilde])

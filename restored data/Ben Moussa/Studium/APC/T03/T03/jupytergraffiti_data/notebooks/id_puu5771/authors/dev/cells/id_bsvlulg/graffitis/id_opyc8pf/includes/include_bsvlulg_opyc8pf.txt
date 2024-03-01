@@ -1,0 +1,6 @@
+var_x = 1e-6
+var_y = 1e-3
+
+Q = var_x * np.eye(nx)
+R = var_y * np.eye(ny)
+P0 = np.eye(nx)
