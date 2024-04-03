@@ -1,0 +1,23 @@
+Fragen:
+continue for 60 in jedem Schritt im gProms Skript warum ?
+
+
+aktuelle Herausvorderung:
+gProms erkennt Server nicht immer
+Assignment ist sehr empfindlich (U oder X value, ...)
+
+
+Erreicht:
+Grundstruktur der Env-Klasse mit erfolgreichem internem Connection-Aufbau von Server und Client 
+
+
+Steht noch an:
+SimSinter Geschichte
+abs vs normal script Vergleich
+
+
+
+zum nächsten Gespräch:
+ys sind in zusamenhang mit demk NARX zu bestimmen
+env so gestalten dass man simsinter damit funktioniert: jeder Schritt pro jeder gProms-Instanz
+sich orientieren am beispiel um die Struktur von make_step: jacobs dürfen mit nullen intialisiert werden
